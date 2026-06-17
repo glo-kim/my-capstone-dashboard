@@ -1,7 +1,7 @@
 <template>
   <v-card variant="flat" class="pa-5" style="background: rgb(var(--v-theme-surface-light)); border: 1px solid rgba(var(--v-theme-outline-variant), 0.5)">
     <div class="section-title mb-4">Weekly Trends</div>
-    <Line :data="chartData" :options="chartOptions" />
+    <Line :data="chartData" :options="(chartOptions as any)" />
   </v-card>
 </template>
 
