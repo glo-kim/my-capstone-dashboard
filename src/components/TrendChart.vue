@@ -19,6 +19,7 @@ import {
   Legend,
   Filler,
 } from 'chart.js'
+import type { ChartOptions } from 'chart.js'
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, Filler)
 
@@ -82,17 +83,17 @@ const chartData = computed(() => ({
   ],
 }))
 
-const chartOptions = {
+const chartOptions: ChartOptions<'line'> = {
   responsive: true,
   maintainAspectRatio: true,
   aspectRatio: 2.5,
   interaction: {
-    mode: 'index' as const,
+    mode: 'index',
     intersect: false,
   },
   plugins: {
     legend: {
-      position: 'bottom' as const,
+      position: 'bottom',
       labels: {
         usePointStyle: true,
         pointStyle: 'circle',
@@ -117,7 +118,7 @@ const chartOptions = {
     },
     y: {
       beginAtZero: true,
-      grid: { color: 'rgba(0,0,0,0.04)', drawBorder: false },
+      grid: { color: 'rgba(0,0,0,0.04)' },
       ticks: { font: { size: 11, family: 'Inter, system-ui, sans-serif' } },
       border: { display: false },
     },
