@@ -1,16 +1,27 @@
 <template>
   <v-app>
-    <v-app-bar elevation="0" color="surface" border="b">
+    <v-app-bar flat color="surface" class="app-bar-md3" border="b">
       <template #prepend>
-        <v-icon icon="mdi-heart-pulse" color="primary" class="ml-2" />
+        <div class="d-flex align-center ml-3">
+          <v-avatar color="primary" size="34" rounded="lg" class="mr-3">
+            <v-icon icon="mdi-heart-pulse" size="20" color="on-primary" />
+          </v-avatar>
+          <div>
+            <div class="text-body-2 font-weight-bold" style="letter-spacing: -0.01em; line-height: 1.2">
+              Evergreen Health
+            </div>
+            <div class="text-caption text-medium-emphasis" style="font-size: 0.7rem">
+              Care Coordination Platform
+            </div>
+          </div>
+        </div>
       </template>
-      <v-app-bar-title class="font-weight-bold text-body-1">
-        Evergreen Health · Care Coordination
-      </v-app-bar-title>
       <template #append>
-        <v-btn icon="mdi-bell-outline" variant="text" size="small" />
-        <v-avatar color="primary" size="32" class="mr-2">
-          <span class="text-caption font-weight-bold text-white">GK</span>
+        <v-btn icon="mdi-magnify" variant="text" size="small" class="mr-1" />
+        <v-btn icon="mdi-bell-outline" variant="text" size="small" class="mr-1" />
+        <v-divider vertical class="mx-2" length="24" />
+        <v-avatar color="primary-container" size="34" class="mr-3" rounded="lg">
+          <span class="text-caption font-weight-bold" style="color: rgb(var(--v-theme-on-primary-container))">GK</span>
         </v-avatar>
       </template>
     </v-app-bar>
@@ -23,3 +34,9 @@
 
 <script setup lang="ts">
 </script>
+
+<style scoped>
+.app-bar-md3 {
+  backdrop-filter: blur(8px);
+}
+</style>

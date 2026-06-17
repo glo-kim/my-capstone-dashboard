@@ -1,30 +1,29 @@
 <template>
-  <v-card class="pa-4">
-    <div class="d-flex align-center justify-space-between mb-3">
-      <div class="text-subtitle-1 font-weight-bold">Risk &amp; Priority</div>
-      <div class="d-flex gap-2">
-        <v-text-field
-          v-model="search"
-          density="compact"
-          placeholder="Search patients..."
-          prepend-inner-icon="mdi-magnify"
-          hide-details
-          clearable
-          style="max-width: 220px"
-          variant="outlined"
-        />
-      </div>
+  <v-card variant="flat" class="risk-card pa-5" style="background: rgb(var(--v-theme-surface-light)); border: 1px solid rgba(var(--v-theme-outline-variant), 0.5)">
+    <div class="d-flex align-center justify-space-between mb-4">
+      <div class="section-title">Risk &amp; Priority</div>
+      <v-text-field
+        v-model="search"
+        density="compact"
+        placeholder="Search patients..."
+        prepend-inner-icon="mdi-magnify"
+        hide-details
+        clearable
+        style="max-width: 240px"
+        variant="outlined"
+        rounded="pill"
+      />
     </div>
 
-    <div class="d-flex flex-wrap gap-2 mb-4">
-      <v-chip-group v-model="statusFilter" multiple>
-        <v-chip filter variant="outlined" value="open" size="small">Open</v-chip>
-        <v-chip filter variant="outlined" value="in-progress" size="small">In Progress</v-chip>
+    <div class="d-flex flex-wrap align-center gap-2 mb-4">
+      <v-chip-group v-model="statusFilter" multiple selected-class="text-primary">
+        <v-chip filter variant="tonal" value="open" size="small">Open</v-chip>
+        <v-chip filter variant="tonal" value="in-progress" size="small">In Progress</v-chip>
       </v-chip-group>
-      <v-chip-group v-model="riskFilter" multiple class="ml-2">
-        <v-chip filter variant="outlined" color="error" value="high" size="small">High Risk</v-chip>
-        <v-chip filter variant="outlined" color="warning" value="medium" size="small">Medium</v-chip>
-        <v-chip filter variant="outlined" color="success" value="low" size="small">Low</v-chip>
+      <v-chip-group v-model="riskFilter" multiple selected-class="text-primary" class="ml-1">
+        <v-chip filter variant="tonal" color="error" value="high" size="small">High Risk</v-chip>
+        <v-chip filter variant="tonal" color="warning" value="medium" size="small">Medium</v-chip>
+        <v-chip filter variant="tonal" color="success" value="low" size="small">Low</v-chip>
       </v-chip-group>
     </div>
 
@@ -35,7 +34,7 @@
           <th class="text-left">Diagnosis</th>
           <th class="text-center">Risk</th>
           <th class="text-center">Status</th>
-          <th class="text-center">Days Since Contact</th>
+          <th class="text-center">Days</th>
           <th class="text-center">Goals</th>
           <th class="text-left">Next Follow-Up</th>
         </tr>
@@ -44,7 +43,7 @@
         <tr
           v-for="item in filteredCases"
           :key="item.case.id"
-          :class="{ 'overdue-row': item.case.followUpOverdue }"
+          :class="{ 'overdue-row': item.case.followUpOverdue, 'selected-row': selectedCase?.case.id === item.case.id }"
           style="cursor: pointer"
           @click="selectedCase = selectedCase?.case.id === item.case.id ? null : item"
         >
@@ -339,13 +338,33 @@ function activityIcon(type: string) {
 </script>
 
 <style scoped>
+.section-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: rgba(var(--v-theme-on-surface), 0.5);
+}
 .overdue-row {
-  background: rgba(var(--v-theme-error), 0.04);
+  background: rgba(var(--v-theme-error), 0.04) !important;
+}
+.selected-row {
+  background: rgba(var(--v-theme-primary), 0.08) !important;
 }
 .risk-table th {
-  font-size: 0.75rem !important;
+  font-size: 0.7rem !important;
   text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: rgba(var(--v-theme-on-surface), 0.6);
+  letter-spacing: 0.06em;
+  font-weight: 700;
+  color: rgba(var(--v-theme-on-surface), 0.5) !important;
+  border-bottom: 1px solid rgba(var(--v-theme-outline-variant), 0.5) !important;
+}
+.risk-table td {
+  border-bottom: 1px solid rgba(var(--v-theme-outline-variant), 0.3) !important;
+  padding-top: 12px !important;
+  padding-bottom: 12px !important;
+}
+.risk-card {
+  transition: box-shadow 200ms cubic-bezier(0.2, 0, 0, 1);
 }
 </style>

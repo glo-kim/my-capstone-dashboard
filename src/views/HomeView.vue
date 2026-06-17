@@ -1,23 +1,22 @@
 <template>
-  <v-container fluid class="pa-4 pa-md-6">
+  <v-container fluid class="pa-5 pa-md-8">
     <!-- Header -->
-    <div class="d-flex align-center justify-space-between mb-5">
+    <div class="d-flex align-center justify-space-between mb-6">
       <div>
-        <h1 class="text-h5 text-md-h4 font-weight-bold">
+        <h1 class="text-h5 text-md-h4 font-weight-bold" style="letter-spacing: -0.02em; line-height: 1.2">
           Good {{ greeting }}, {{ data.coordinator.name.split(' ')[0] }}
         </h1>
-        <div class="text-body-2 text-medium-emphasis mt-1">
-          {{ todayFormatted }} · {{ data.summary.totalActiveCases }} active cases
+        <div class="text-body-2 text-medium-emphasis mt-2" style="letter-spacing: 0.01em">
+          {{ todayFormatted }} · <span class="font-weight-medium">{{ data.summary.totalActiveCases }} active cases</span>
         </div>
       </div>
-      <div class="d-flex align-center gap-2">
-        <v-btn
-          :icon="darkMode ? 'mdi-weather-sunny' : 'mdi-weather-night'"
-          variant="tonal"
-          size="small"
-          @click="toggleTheme"
-        />
-      </div>
+      <v-btn
+        :icon="darkMode ? 'mdi-white-balance-sunny' : 'mdi-moon-waning-crescent'"
+        variant="tonal"
+        color="secondary"
+        size="small"
+        @click="toggleTheme"
+      />
     </div>
 
     <!-- KPI Row -->
@@ -118,47 +117,43 @@
         />
 
         <!-- Recent Closures -->
-        <v-card class="pa-4 mt-4">
-          <div class="text-subtitle-1 font-weight-bold mb-3">Recently Closed</div>
-          <v-list density="compact" class="pa-0">
-            <v-list-item
-              v-for="closed in data.outcomes.closedCasesThisMonth"
-              :key="closed.caseId"
-              class="px-0"
+        <v-card variant="flat" class="pa-5 mt-4" style="background: rgb(var(--v-theme-surface-light)); border: 1px solid rgba(var(--v-theme-outline-variant), 0.5)">
+          <div class="section-title mb-4">Recently Closed</div>
+          <div
+            v-for="closed in data.outcomes.closedCasesThisMonth"
+            :key="closed.caseId"
+            class="d-flex align-center gap-3 mb-3"
+          >
+            <v-avatar
+              :color="closed.readmitted ? 'error-container' : 'success-container'"
+              size="32"
+              rounded="lg"
             >
-              <template #prepend>
-                <v-avatar
-                  :color="closed.readmitted ? 'error' : 'success'"
-                  variant="tonal"
-                  size="28"
-                  rounded="lg"
-                >
-                  <v-icon
-                    :icon="closed.readmitted ? 'mdi-hospital-building' : 'mdi-check'"
-                    size="16"
-                  />
-                </v-avatar>
-              </template>
-              <v-list-item-title class="text-body-2">
+              <v-icon
+                :icon="closed.readmitted ? 'mdi-hospital-building' : 'mdi-check-circle'"
+                :color="closed.readmitted ? 'error' : 'success'"
+                size="16"
+              />
+            </v-avatar>
+            <div class="flex-grow-1" style="min-width: 0">
+              <div class="text-body-2 font-weight-medium text-truncate">
                 {{ closed.patientName }}
-              </v-list-item-title>
-              <v-list-item-subtitle class="text-caption">
+              </div>
+              <div class="text-caption text-medium-emphasis text-truncate">
                 {{ closed.diagnosis }}
                 <v-chip
                   v-if="closed.readmitted"
                   size="x-small"
                   color="error"
-                  variant="flat"
+                  variant="tonal"
                   class="ml-1"
                 >
                   Readmitted
                 </v-chip>
-              </v-list-item-subtitle>
-              <template #append>
-                <span class="text-caption text-medium-emphasis">{{ formatDate(closed.closedDate) }}</span>
-              </template>
-            </v-list-item>
-          </v-list>
+              </div>
+            </div>
+            <span class="text-caption text-medium-emphasis" style="white-space: nowrap">{{ formatDate(closed.closedDate) }}</span>
+          </div>
         </v-card>
       </v-col>
     </v-row>
@@ -214,3 +209,13 @@ function formatDate(date: string) {
   return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
 }
 </script>
+
+<style scoped>
+.section-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: rgba(var(--v-theme-on-surface), 0.5);
+}
+</style>

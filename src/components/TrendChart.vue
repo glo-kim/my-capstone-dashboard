@@ -1,6 +1,6 @@
 <template>
-  <v-card class="pa-4">
-    <div class="text-subtitle-1 font-weight-bold mb-3">Weekly Trends</div>
+  <v-card variant="flat" class="pa-5" style="background: rgb(var(--v-theme-surface-light)); border: 1px solid rgba(var(--v-theme-outline-variant), 0.5)">
+    <div class="section-title mb-4">Weekly Trends</div>
     <Line :data="chartData" :options="chartOptions" />
   </v-card>
 </template>
@@ -38,42 +38,46 @@ const chartData = computed(() => ({
     {
       label: 'Active Cases',
       data: props.trend.activeCases,
-      borderColor: '#6750A4',
-      backgroundColor: 'rgba(103, 80, 164, 0.1)',
+      borderColor: '#1B6B5A',
+      backgroundColor: 'rgba(27, 107, 90, 0.08)',
       fill: true,
-      tension: 0.3,
-      pointRadius: 4,
+      tension: 0.4,
+      pointRadius: 3,
       pointHoverRadius: 6,
+      borderWidth: 2,
     },
     {
       label: 'High Risk',
       data: props.trend.highRiskCount,
-      borderColor: '#B3261E',
-      backgroundColor: 'rgba(179, 38, 30, 0.1)',
+      borderColor: '#BA1A1A',
+      backgroundColor: 'rgba(186, 26, 26, 0.08)',
       fill: false,
-      tension: 0.3,
-      pointRadius: 4,
+      tension: 0.4,
+      pointRadius: 3,
       pointHoverRadius: 6,
+      borderWidth: 2,
     },
     {
       label: 'Contacts Made',
       data: props.trend.contactsMade,
-      borderColor: '#625B71',
-      backgroundColor: 'rgba(98, 91, 113, 0.1)',
+      borderColor: '#4B635B',
+      backgroundColor: 'rgba(75, 99, 91, 0.08)',
       fill: false,
-      tension: 0.3,
-      pointRadius: 4,
+      tension: 0.4,
+      pointRadius: 3,
       pointHoverRadius: 6,
+      borderWidth: 2,
     },
     {
       label: 'Goals Achieved',
       data: props.trend.goalsAchieved,
-      borderColor: '#386A20',
-      backgroundColor: 'rgba(56, 106, 32, 0.1)',
+      borderColor: '#006D3A',
+      backgroundColor: 'rgba(0, 109, 58, 0.08)',
       fill: false,
-      tension: 0.3,
-      pointRadius: 4,
+      tension: 0.4,
+      pointRadius: 3,
       pointHoverRadius: 6,
+      borderWidth: 2,
     },
   ],
 }))
@@ -92,26 +96,41 @@ const chartOptions = {
       labels: {
         usePointStyle: true,
         pointStyle: 'circle',
-        padding: 16,
-        font: { size: 12 },
+        padding: 20,
+        font: { size: 11, family: 'Inter, system-ui, sans-serif', weight: '500' as const },
       },
     },
     tooltip: {
-      backgroundColor: 'rgba(28, 27, 31, 0.9)',
+      backgroundColor: '#1C1B1F',
+      titleFont: { family: 'Inter, system-ui, sans-serif', weight: '600' as const, size: 12 },
+      bodyFont: { family: 'Inter, system-ui, sans-serif', size: 11 },
       cornerRadius: 12,
       padding: 12,
+      boxPadding: 4,
     },
   },
   scales: {
     x: {
       grid: { display: false },
-      ticks: { font: { size: 11 } },
+      ticks: { font: { size: 11, family: 'Inter, system-ui, sans-serif' } },
+      border: { display: false },
     },
     y: {
       beginAtZero: true,
-      grid: { color: 'rgba(0,0,0,0.06)' },
-      ticks: { font: { size: 11 } },
+      grid: { color: 'rgba(0,0,0,0.04)', drawBorder: false },
+      ticks: { font: { size: 11, family: 'Inter, system-ui, sans-serif' } },
+      border: { display: false },
     },
   },
 }
 </script>
+
+<style scoped>
+.section-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: rgba(var(--v-theme-on-surface), 0.5);
+}
+</style>

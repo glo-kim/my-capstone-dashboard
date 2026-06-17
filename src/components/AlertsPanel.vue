@@ -1,34 +1,48 @@
 <template>
-  <v-card class="pa-4">
-    <div class="d-flex align-center justify-space-between mb-3">
-      <div class="text-subtitle-1 font-weight-bold">Alerts</div>
-      <v-chip size="x-small" color="error" variant="flat" v-if="unacknowledgedCount > 0">
-        {{ unacknowledgedCount }}
-      </v-chip>
+  <v-card variant="flat" class="alerts-card pa-5" style="background: rgb(var(--v-theme-surface-light)); border: 1px solid rgba(var(--v-theme-outline-variant), 0.5)">
+    <div class="d-flex align-center justify-space-between mb-4">
+      <div class="section-title">Alerts</div>
+      <v-badge
+        v-if="unacknowledgedCount > 0"
+        :content="unacknowledgedCount"
+        color="error"
+        inline
+      />
     </div>
 
     <div v-for="alert in sortedAlerts" :key="alert.id" class="mb-3">
-      <v-alert
-        :type="alertType(alert.type)"
-        :icon="alertIcon(alert.type)"
-        density="compact"
-        variant="tonal"
+      <v-sheet
+        :color="alertBgColor(alert.type)"
         rounded="xl"
+        class="pa-3 alert-item"
         :class="{ 'alert-acknowledged': alert.acknowledged }"
-        closable
-        @click:close="$emit('acknowledge', alert.id)"
+        :style="{ borderLeft: `3px solid rgb(var(--v-theme-${alertColorName(alert.type)}))` }"
       >
-        <div class="text-body-2 font-weight-medium">{{ alert.patientName }}</div>
-        <div class="text-caption">{{ alert.message }}</div>
-        <div class="text-caption text-medium-emphasis mt-1">
-          {{ formatTime(alert.timestamp) }}
+        <div class="d-flex align-start gap-3">
+          <v-avatar :color="alertColorName(alert.type)" size="28" rounded="lg" variant="tonal">
+            <v-icon :icon="alertIcon(alert.type)" size="14" />
+          </v-avatar>
+          <div class="flex-grow-1">
+            <div class="text-body-2 font-weight-bold" style="line-height: 1.3">{{ alert.patientName }}</div>
+            <div class="text-caption text-medium-emphasis mt-1" style="line-height: 1.4">{{ alert.message }}</div>
+            <div class="text-caption mt-2" style="opacity: 0.5; font-size: 0.65rem">
+              {{ formatTime(alert.timestamp) }}
+            </div>
+          </div>
+          <v-btn
+            icon="mdi-close"
+            size="x-small"
+            variant="text"
+            density="compact"
+            @click.stop="$emit('acknowledge', alert.id)"
+          />
         </div>
-      </v-alert>
+      </v-sheet>
     </div>
 
-    <div v-if="alerts.length === 0" class="text-center pa-6 text-medium-emphasis">
-      <v-icon icon="mdi-bell-check-outline" size="40" class="mb-2" />
-      <div class="text-body-2">No alerts</div>
+    <div v-if="alerts.length === 0" class="text-center pa-8 text-medium-emphasis">
+      <v-icon icon="mdi-bell-check-outline" size="40" class="mb-2" color="success" />
+      <div class="text-body-2">All clear — no alerts</div>
     </div>
   </v-card>
 </template>
@@ -69,7 +83,13 @@ const sortedAlerts = computed(() =>
   })
 )
 
-function alertType(type: string): 'error' | 'warning' | 'info' {
+function alertBgColor(type: string): string {
+  if (type === 'critical') return 'error-container'
+  if (type === 'warning') return 'warning-container'
+  return 'info-container'
+}
+
+function alertColorName(type: string): string {
   if (type === 'critical') return 'error'
   if (type === 'warning') return 'warning'
   return 'info'
@@ -88,7 +108,22 @@ function formatTime(timestamp: string) {
 </script>
 
 <style scoped>
+.section-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: rgba(var(--v-theme-on-surface), 0.5);
+}
 .alert-acknowledged {
-  opacity: 0.5;
+  opacity: 0.4;
+  transform: scale(0.98);
+}
+.alert-item {
+  transition: opacity 200ms cubic-bezier(0.2, 0, 0, 1),
+              transform 200ms cubic-bezier(0.2, 0, 0, 1);
+}
+.alerts-card {
+  transition: box-shadow 200ms cubic-bezier(0.2, 0, 0, 1);
 }
 </style>

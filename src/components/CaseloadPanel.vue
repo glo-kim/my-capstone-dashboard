@@ -1,147 +1,122 @@
 <template>
-  <v-card class="pa-4">
-    <div class="d-flex align-center justify-space-between mb-3">
-      <div class="text-subtitle-1 font-weight-bold">Caseload Breakdown</div>
-      <v-icon icon="mdi-folder-multiple-outline" color="primary" size="20" />
+  <v-card variant="flat" class="caseload-card pa-5" style="background: rgb(var(--v-theme-surface-light)); border: 1px solid rgba(var(--v-theme-outline-variant), 0.5)">
+    <!-- Section: Caseload -->
+    <div class="d-flex align-center justify-space-between mb-4">
+      <div class="section-title">Caseload</div>
+      <v-chip size="x-small" color="primary" variant="tonal">{{ summary.totalActiveCases }} active</v-chip>
     </div>
 
-    <div class="d-flex align-center gap-3 mb-4">
-      <div class="flex-grow-1">
-        <div class="d-flex justify-space-between text-body-2 mb-1">
-          <span>Capacity</span>
-          <span class="font-weight-medium">{{ summary.totalActiveCases }} / {{ coordinator.activeCaseLimit }}</span>
+    <div class="mb-4">
+      <div class="d-flex justify-space-between text-body-2 mb-2">
+        <span class="text-medium-emphasis">Capacity</span>
+        <span class="font-weight-bold">{{ summary.totalActiveCases }}<span class="text-medium-emphasis font-weight-regular"> / {{ coordinator.activeCaseLimit }}</span></span>
+      </div>
+      <v-progress-linear
+        :model-value="(summary.totalActiveCases / coordinator.activeCaseLimit) * 100"
+        color="primary"
+        bg-color="primary"
+        bg-opacity="0.12"
+        rounded
+        height="10"
+      />
+    </div>
+
+    <div class="status-grid mb-2">
+      <div class="status-item">
+        <v-avatar size="36" color="warning-container" rounded="lg">
+          <v-icon icon="mdi-folder-open-outline" size="18" color="warning" />
+        </v-avatar>
+        <div class="ml-3">
+          <div class="text-h6 font-weight-bold" style="line-height: 1.2">{{ summary.openCases }}</div>
+          <div class="text-caption text-medium-emphasis">Open</div>
         </div>
-        <v-progress-linear
-          :model-value="(summary.totalActiveCases / coordinator.activeCaseLimit) * 100"
-          color="primary"
-          rounded
-          height="8"
-        />
+      </div>
+      <div class="status-item">
+        <v-avatar size="36" color="info-container" rounded="lg">
+          <v-icon icon="mdi-progress-clock" size="18" color="info" />
+        </v-avatar>
+        <div class="ml-3">
+          <div class="text-h6 font-weight-bold" style="line-height: 1.2">{{ summary.inProgressCases }}</div>
+          <div class="text-caption text-medium-emphasis">In Progress</div>
+        </div>
+      </div>
+      <div class="status-item">
+        <v-avatar size="36" color="success-container" rounded="lg">
+          <v-icon icon="mdi-check-circle-outline" size="18" color="success" />
+        </v-avatar>
+        <div class="ml-3">
+          <div class="text-h6 font-weight-bold" style="line-height: 1.2">{{ summary.closedThisMonth }}</div>
+          <div class="text-caption text-medium-emphasis">Closed</div>
+        </div>
       </div>
     </div>
 
-    <v-list density="compact" class="pa-0">
-      <v-list-item class="px-0">
-        <template #prepend>
-          <v-avatar size="32" color="warning" variant="tonal" rounded="lg">
-            <v-icon icon="mdi-folder-open-outline" size="18" />
-          </v-avatar>
-        </template>
-        <v-list-item-title class="text-body-2">Open</v-list-item-title>
-        <template #append>
-          <span class="text-h6 font-weight-bold">{{ summary.openCases }}</span>
-        </template>
-      </v-list-item>
-      <v-list-item class="px-0">
-        <template #prepend>
-          <v-avatar size="32" color="info" variant="tonal" rounded="lg">
-            <v-icon icon="mdi-progress-clock" size="18" />
-          </v-avatar>
-        </template>
-        <v-list-item-title class="text-body-2">In Progress</v-list-item-title>
-        <template #append>
-          <span class="text-h6 font-weight-bold">{{ summary.inProgressCases }}</span>
-        </template>
-      </v-list-item>
-      <v-list-item class="px-0">
-        <template #prepend>
-          <v-avatar size="32" color="success" variant="tonal" rounded="lg">
-            <v-icon icon="mdi-check-circle-outline" size="18" />
-          </v-avatar>
-        </template>
-        <v-list-item-title class="text-body-2">Closed (This Month)</v-list-item-title>
-        <template #append>
-          <span class="text-h6 font-weight-bold">{{ summary.closedThisMonth }}</span>
-        </template>
-      </v-list-item>
-    </v-list>
+    <v-divider class="my-5" />
 
-    <v-divider class="my-4" />
+    <!-- Section: Activity -->
+    <div class="section-title mb-4">Activity This Week</div>
 
-    <div class="text-subtitle-1 font-weight-bold mb-3">Activity This Week</div>
+    <div class="activity-grid">
+      <div class="activity-item" v-for="item in activityItems" :key="item.label">
+        <v-avatar size="32" :color="item.color" variant="tonal" rounded="lg">
+          <v-icon :icon="item.icon" size="16" />
+        </v-avatar>
+        <div class="ml-3 flex-grow-1">
+          <div class="text-caption text-medium-emphasis">{{ item.label }}</div>
+        </div>
+        <div class="text-body-1 font-weight-bold">{{ item.value }}</div>
+      </div>
+    </div>
 
-    <v-list density="compact" class="pa-0">
-      <v-list-item class="px-0">
-        <template #prepend>
-          <v-avatar size="32" color="primary" variant="tonal" rounded="lg">
-            <v-icon icon="mdi-phone-outline" size="18" />
-          </v-avatar>
-        </template>
-        <v-list-item-title class="text-body-2">Phone Calls</v-list-item-title>
-        <template #append>
-          <span class="font-weight-bold">{{ activitySummary.thisWeek.phoneCalls }}</span>
-        </template>
-      </v-list-item>
-      <v-list-item class="px-0">
-        <template #prepend>
-          <v-avatar size="32" color="tertiary" variant="tonal" rounded="lg">
-            <v-icon icon="mdi-home-account" size="18" />
-          </v-avatar>
-        </template>
-        <v-list-item-title class="text-body-2">Home Visits</v-list-item-title>
-        <template #append>
-          <span class="font-weight-bold">{{ activitySummary.thisWeek.homeVisits }}</span>
-        </template>
-      </v-list-item>
-      <v-list-item class="px-0">
-        <template #prepend>
-          <v-avatar size="32" color="secondary" variant="tonal" rounded="lg">
-            <v-icon icon="mdi-swap-horizontal" size="18" />
-          </v-avatar>
-        </template>
-        <v-list-item-title class="text-body-2">Coordination Tasks</v-list-item-title>
-        <template #append>
-          <span class="font-weight-bold">{{ activitySummary.thisWeek.coordinationTasks }}</span>
-        </template>
-      </v-list-item>
-      <v-list-item class="px-0">
-        <template #prepend>
-          <v-avatar size="32" color="primary" variant="tonal" rounded="lg">
-            <v-icon icon="mdi-clock-outline" size="18" />
-          </v-avatar>
-        </template>
-        <v-list-item-title class="text-body-2">Contact Minutes</v-list-item-title>
-        <template #append>
-          <span class="font-weight-bold">{{ activitySummary.thisWeek.totalContactMinutes }}</span>
-        </template>
-      </v-list-item>
-    </v-list>
+    <v-divider class="my-5" />
 
-    <v-divider class="my-4" />
-
-    <div class="text-subtitle-1 font-weight-bold mb-3">Outcomes</div>
+    <!-- Section: Goal Completion -->
+    <div class="section-title mb-4">Goal Completion</div>
 
     <div
       v-for="(value, key) in goalCompletion"
       :key="key"
       class="mb-3"
     >
-      <div class="d-flex justify-space-between text-body-2 mb-1">
-        <span>{{ formatGoalLabel(key as string) }}</span>
-        <span class="font-weight-medium">{{ Math.round(value * 100) }}%</span>
+      <div class="d-flex justify-space-between mb-1">
+        <span class="text-caption text-medium-emphasis">{{ formatGoalLabel(key as string) }}</span>
+        <span class="text-caption font-weight-bold">{{ Math.round(value * 100) }}%</span>
       </div>
       <v-progress-linear
         :model-value="value * 100"
         :color="value >= 0.7 ? 'success' : value >= 0.5 ? 'warning' : 'error'"
+        :bg-color="value >= 0.7 ? 'success' : value >= 0.5 ? 'warning' : 'error'"
+        bg-opacity="0.1"
         rounded
         height="6"
       />
     </div>
 
-    <div class="d-flex align-center mt-4 pa-3 rounded-xl" style="background: rgb(var(--v-theme-surface-variant), 0.3)">
-      <v-icon icon="mdi-hospital-building" size="20" class="mr-2" color="primary" />
-      <div>
-        <div class="text-body-2 font-weight-medium">Readmission Rate</div>
-        <div class="text-body-2 text-medium-emphasis">
-          {{ Math.round(readmissionStats.last30Days.rate * 100) }}% yours vs {{ Math.round(readmissionStats.nationalAverage * 100) }}% national
+    <!-- Readmission callout -->
+    <v-sheet
+      color="primary-container"
+      rounded="xl"
+      class="pa-4 mt-5 d-flex align-center"
+    >
+      <v-avatar color="primary" size="36" rounded="lg">
+        <v-icon icon="mdi-hospital-building" size="18" color="on-primary" />
+      </v-avatar>
+      <div class="ml-3">
+        <div class="text-body-2 font-weight-bold" style="color: rgb(var(--v-theme-on-primary-container))">
+          {{ Math.round(readmissionStats.last30Days.rate * 100) }}% Readmission
+        </div>
+        <div class="text-caption" style="color: rgb(var(--v-theme-on-primary-container)); opacity: 0.7">
+          vs {{ Math.round(readmissionStats.nationalAverage * 100) }}% national avg
         </div>
       </div>
-    </div>
+    </v-sheet>
   </v-card>
 </template>
 
 <script setup lang="ts">
-defineProps<{
+import { computed } from 'vue'
+
+const props = defineProps<{
   summary: {
     totalActiveCases: number
     openCases: number
@@ -167,9 +142,47 @@ defineProps<{
   }
 }>()
 
+const activityItems = computed(() => [
+  { label: 'Phone Calls', value: props.activitySummary.thisWeek.phoneCalls, icon: 'mdi-phone-outline', color: 'primary' },
+  { label: 'Home Visits', value: props.activitySummary.thisWeek.homeVisits, icon: 'mdi-home-account', color: 'tertiary' },
+  { label: 'Coordination', value: props.activitySummary.thisWeek.coordinationTasks, icon: 'mdi-swap-horizontal', color: 'secondary' },
+  { label: 'Contact Mins', value: props.activitySummary.thisWeek.totalContactMinutes, icon: 'mdi-clock-outline', color: 'info' },
+])
+
 function formatGoalLabel(key: string): string {
   return key
     .replace(/([A-Z])/g, ' $1')
     .replace(/^./, (s) => s.toUpperCase())
 }
 </script>
+
+<style scoped>
+.caseload-card {
+  transition: box-shadow 200ms cubic-bezier(0.2, 0, 0, 1);
+}
+.section-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: rgba(var(--v-theme-on-surface), 0.5);
+}
+.status-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.status-item {
+  display: flex;
+  align-items: center;
+}
+.activity-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.activity-item {
+  display: flex;
+  align-items: center;
+}
+</style>
