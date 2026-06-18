@@ -1,5 +1,5 @@
 <template>
-  <v-card variant="flat" class="caseload-card pa-5" style="background: rgb(var(--v-theme-surface-light)); border: 1px solid rgba(var(--v-theme-outline-variant), 0.5)">
+  <component :is="embedded ? 'div' : 'v-card'" v-bind="!embedded ? { variant: 'flat', class: 'caseload-card pa-5', style: 'background: rgb(var(--v-theme-surface-light)); border: 1px solid rgba(var(--v-theme-outline-variant), 0.5)' } : {}">
     <!-- Section: Caseload -->
     <div class="d-flex align-center justify-space-between mb-4">
       <div class="section-title">Caseload</div>
@@ -110,7 +110,7 @@
         </div>
       </div>
     </v-sheet>
-  </v-card>
+  </component>
 </template>
 
 <script setup lang="ts">
@@ -140,6 +140,7 @@ const props = defineProps<{
     last30Days: { rate: number }
     nationalAverage: number
   }
+  embedded?: boolean
 }>()
 
 const activityItems = computed(() => [

@@ -87,16 +87,71 @@
       </v-col>
     </v-row>
 
-    <!-- Second Row: Caseload, Alerts, Recently Closed -->
+    <!-- Second Row: Caseload + Recently Closed (tabbed), Alerts -->
     <v-row>
-      <v-col cols="12" md="4">
-        <CaseloadPanel
-          :summary="data.summary"
-          :coordinator="data.coordinator"
-          :activity-summary="data.activitySummary"
-          :goal-completion="data.outcomes.goalCompletionByCategory"
-          :readmission-stats="data.outcomes.readmissionStats"
-        />
+      <v-col cols="12" md="8">
+        <v-card variant="flat" class="pa-5" style="background: rgb(var(--v-theme-surface-light)); border: 1px solid rgba(var(--v-theme-outline-variant), 0.5)">
+          <v-tabs v-model="casesTab" density="compact" color="primary" class="mb-4">
+            <v-tab value="active">Active Cases</v-tab>
+            <v-tab value="closed">Closed Cases</v-tab>
+          </v-tabs>
+
+          <v-tabs-window v-model="casesTab">
+            <v-tabs-window-item value="active">
+              <CaseloadPanel
+                :summary="data.summary"
+                :coordinator="data.coordinator"
+                :activity-summary="data.activitySummary"
+                :goal-completion="data.outcomes.goalCompletionByCategory"
+                :readmission-stats="data.outcomes.readmissionStats"
+                embedded
+              />
+            </v-tabs-window-item>
+
+            <v-tabs-window-item value="closed">
+              <div
+                v-for="(closed, index) in data.outcomes.closedCasesThisMonth"
+                :key="closed.caseId"
+              >
+                <v-divider v-if="index > 0" class="my-3" />
+                <div class="d-flex align-center">
+                  <v-avatar
+                    :color="closed.readmitted ? 'error-container' : 'success-container'"
+                    size="32"
+                    rounded="lg"
+                    class="mr-4"
+                  >
+                    <v-icon
+                      :icon="closed.readmitted ? 'mdi-hospital-building' : 'mdi-check-circle'"
+                      :color="closed.readmitted ? 'error' : 'success'"
+                      size="16"
+                    />
+                  </v-avatar>
+                  <div class="flex-grow-1" style="min-width: 0">
+                    <div class="text-body-2 font-weight-medium text-truncate">
+                      {{ closed.patientName }}
+                    </div>
+                  </div>
+                  <span class="text-caption text-medium-emphasis" style="white-space: nowrap; margin-left: auto">{{ formatDate(closed.closedDate) }}</span>
+                </div>
+                <div style="margin-left: 48px">
+                  <div class="text-caption text-medium-emphasis text-truncate">
+                    {{ closed.diagnosis }}
+                    <v-chip
+                      v-if="closed.readmitted"
+                      size="x-small"
+                      color="error"
+                      variant="tonal"
+                      class="ml-1"
+                    >
+                      Readmitted
+                    </v-chip>
+                  </div>
+                </div>
+              </div>
+            </v-tabs-window-item>
+          </v-tabs-window>
+        </v-card>
       </v-col>
 
       <v-col cols="12" md="4">
@@ -104,53 +159,6 @@
           :alerts="alerts"
           @acknowledge="acknowledgeAlert"
         />
-      </v-col>
-
-      <v-col cols="12" md="4">
-        <!-- Recent Closures -->
-        <v-card variant="flat" class="pa-5" style="background: rgb(var(--v-theme-surface-light)); border: 1px solid rgba(var(--v-theme-outline-variant), 0.5)">
-          <div class="section-title mb-4">Recently Closed</div>
-          <div
-            v-for="(closed, index) in data.outcomes.closedCasesThisMonth"
-            :key="closed.caseId"
-          >
-            <v-divider v-if="index > 0" class="my-3" />
-            <div class="d-flex align-center">
-              <v-avatar
-                :color="closed.readmitted ? 'error-container' : 'success-container'"
-                size="32"
-                rounded="lg"
-                class="mr-4"
-              >
-                <v-icon
-                  :icon="closed.readmitted ? 'mdi-hospital-building' : 'mdi-check-circle'"
-                  :color="closed.readmitted ? 'error' : 'success'"
-                  size="16"
-                />
-              </v-avatar>
-              <div class="flex-grow-1" style="min-width: 0">
-                <div class="text-body-2 font-weight-medium text-truncate">
-                  {{ closed.patientName }}
-                </div>
-              </div>
-              <span class="text-caption text-medium-emphasis" style="white-space: nowrap; margin-left: auto">{{ formatDate(closed.closedDate) }}</span>
-            </div>
-            <div style="margin-left: 48px">
-              <div class="text-caption text-medium-emphasis text-truncate">
-                {{ closed.diagnosis }}
-                <v-chip
-                  v-if="closed.readmitted"
-                  size="x-small"
-                  color="error"
-                  variant="tonal"
-                  class="ml-1"
-                >
-                  Readmitted
-                </v-chip>
-              </div>
-            </div>
-          </div>
-        </v-card>
       </v-col>
     </v-row>
 
@@ -288,6 +296,7 @@ const data = metricsData
 const alerts = ref([...data.alerts])
 const drawerOpen = ref(false)
 const selectedCase = ref<any>(null)
+const casesTab = ref('active')
 
 function onCaseSelect(item: any) {
   if (item) {
