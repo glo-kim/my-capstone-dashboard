@@ -1,19 +1,25 @@
 <template>
   <v-card variant="flat" class="risk-card pa-5" style="background: rgb(var(--v-theme-surface-light)); border: 1px solid rgba(var(--v-theme-outline-variant), 0.5)">
-    <div class="d-flex align-center justify-space-between mb-4">
-      <div class="section-title">Risk &amp; Priority</div>
-      <v-text-field
-        v-model="search"
-        density="compact"
-        placeholder="Search patients..."
-        prepend-inner-icon="mdi-magnify"
-        hide-details
-        clearable
-        style="max-width: 240px"
-        variant="outlined"
-        rounded="pill"
-      />
-    </div>
+    <v-tabs v-model="activeTab" density="compact" color="primary" class="mb-4">
+      <v-tab value="patients">Risk &amp; Priority</v-tab>
+      <v-tab value="trends">Weekly Trends</v-tab>
+    </v-tabs>
+
+    <v-tabs-window v-model="activeTab">
+      <v-tabs-window-item value="patients">
+        <div class="d-flex align-center justify-space-between mb-4">
+          <v-text-field
+            v-model="search"
+            density="compact"
+            placeholder="Search patients..."
+            prepend-inner-icon="mdi-magnify"
+            hide-details
+            clearable
+            style="max-width: 240px"
+            variant="outlined"
+            rounded="pill"
+          />
+        </div>
 
     <div class="d-flex flex-wrap align-center gap-2 mb-4">
       <v-chip-group v-model="statusFilter" multiple selected-class="text-primary">
@@ -118,12 +124,18 @@
       <v-icon icon="mdi-filter-off-outline" size="48" class="mb-2" />
       <div class="text-body-1">No cases match your filters</div>
     </div>
+      </v-tabs-window-item>
 
+      <v-tabs-window-item value="trends">
+        <TrendChart v-if="trend" :trend="trend" embedded />
+      </v-tabs-window-item>
+    </v-tabs-window>
   </v-card>
 </template>
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
+import TrendChart from './TrendChart.vue'
 
 interface Patient {
   id: string
@@ -176,11 +188,14 @@ const props = defineProps<{
   cases: Case[]
   patients: Patient[]
   activities: Activity[]
+  trend?: any
 }>()
 
 const emit = defineEmits<{
   select: [item: CaseWithPatient | null]
 }>()
+
+const activeTab = ref('patients')
 
 const search = ref('')
 const statusFilter = ref<string[]>([])

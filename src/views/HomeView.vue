@@ -87,9 +87,9 @@
       </v-col>
     </v-row>
 
-    <!-- Second Row: Caseload + Recently Closed (tabbed), Alerts -->
+    <!-- Second Row: Cases (tabbed) + Risk & Priority, Alerts below Risk -->
     <v-row>
-      <v-col cols="12" md="8">
+      <v-col cols="12" md="4">
         <v-card variant="flat" class="pa-5" style="background: rgb(var(--v-theme-surface-light)); border: 1px solid rgba(var(--v-theme-outline-variant), 0.5)">
           <v-tabs v-model="casesTab" density="compact" color="primary" class="mb-4">
             <v-tab value="active">Active Cases</v-tab>
@@ -152,32 +152,23 @@
             </v-tabs-window-item>
           </v-tabs-window>
         </v-card>
+
+        <div class="mt-4">
+          <AlertsPanel
+            :alerts="alerts"
+            @acknowledge="acknowledgeAlert"
+          />
+        </div>
       </v-col>
 
-      <v-col cols="12" md="4">
-        <AlertsPanel
-          :alerts="alerts"
-          @acknowledge="acknowledgeAlert"
-        />
-      </v-col>
-    </v-row>
-
-    <!-- Third Row: Risk & Priority (full width) -->
-    <v-row>
-      <v-col cols="12">
+      <v-col cols="12" md="8">
         <RiskPriorityPanel
           :cases="data.cases"
           :patients="data.patients"
           :activities="data.activities"
+          :trend="data.weeklyTrend"
           @select="onCaseSelect"
         />
-      </v-col>
-    </v-row>
-
-    <!-- Trend Chart -->
-    <v-row>
-      <v-col cols="12">
-        <TrendChart :trend="data.weeklyTrend" />
       </v-col>
     </v-row>
   </v-container>
@@ -289,7 +280,6 @@ import KpiCard from '../components/KpiCard.vue'
 import CaseloadPanel from '../components/CaseloadPanel.vue'
 import RiskPriorityPanel from '../components/RiskPriorityPanel.vue'
 import AlertsPanel from '../components/AlertsPanel.vue'
-import TrendChart from '../components/TrendChart.vue'
 
 const data = metricsData
 
