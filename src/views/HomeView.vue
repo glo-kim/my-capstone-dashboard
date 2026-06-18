@@ -120,25 +120,31 @@
         <v-card variant="flat" class="pa-5 mt-4" style="background: rgb(var(--v-theme-surface-light)); border: 1px solid rgba(var(--v-theme-outline-variant), 0.5)">
           <div class="section-title mb-4">Recently Closed</div>
           <div
-            v-for="closed in data.outcomes.closedCasesThisMonth"
+            v-for="(closed, index) in data.outcomes.closedCasesThisMonth"
             :key="closed.caseId"
-            class="d-flex align-center gap-3 mb-3"
           >
-            <v-avatar
-              :color="closed.readmitted ? 'error-container' : 'success-container'"
-              size="32"
-              rounded="lg"
-            >
-              <v-icon
-                :icon="closed.readmitted ? 'mdi-hospital-building' : 'mdi-check-circle'"
-                :color="closed.readmitted ? 'error' : 'success'"
-                size="16"
-              />
-            </v-avatar>
-            <div class="flex-grow-1" style="min-width: 0">
-              <div class="text-body-2 font-weight-medium text-truncate">
-                {{ closed.patientName }}
+            <v-divider v-if="index > 0" class="my-3" />
+            <div class="d-flex align-center">
+              <v-avatar
+                :color="closed.readmitted ? 'error-container' : 'success-container'"
+                size="32"
+                rounded="lg"
+                class="mr-4"
+              >
+                <v-icon
+                  :icon="closed.readmitted ? 'mdi-hospital-building' : 'mdi-check-circle'"
+                  :color="closed.readmitted ? 'error' : 'success'"
+                  size="16"
+                />
+              </v-avatar>
+              <div class="flex-grow-1" style="min-width: 0">
+                <div class="text-body-2 font-weight-medium text-truncate">
+                  {{ closed.patientName }}
+                </div>
               </div>
+              <span class="text-caption text-medium-emphasis" style="white-space: nowrap; margin-left: auto">{{ formatDate(closed.closedDate) }}</span>
+            </div>
+            <div style="margin-left: 48px">
               <div class="text-caption text-medium-emphasis text-truncate">
                 {{ closed.diagnosis }}
                 <v-chip
@@ -152,7 +158,6 @@
                 </v-chip>
               </div>
             </div>
-            <span class="text-caption text-medium-emphasis" style="white-space: nowrap">{{ formatDate(closed.closedDate) }}</span>
           </div>
         </v-card>
       </v-col>
