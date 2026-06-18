@@ -13,21 +13,17 @@
     <div v-for="alert in sortedAlerts" :key="alert.id" class="mb-3">
       <v-sheet
         :color="alertBgColor(alert.type)"
-        rounded="xl"
+        rounded="0"
         class="pa-3 alert-item"
         :class="{ 'alert-acknowledged': alert.acknowledged }"
         :style="{ borderLeft: `3px solid rgb(var(--v-theme-${alertColorName(alert.type)}))` }"
       >
-        <div class="d-flex align-start gap-3">
-          <v-avatar :color="alertColorName(alert.type)" size="28" rounded="lg" variant="tonal">
+        <div class="d-flex align-center">
+          <v-avatar :color="alertColorName(alert.type)" size="28" rounded="lg" variant="tonal" class="mr-4">
             <v-icon :icon="alertIcon(alert.type)" size="14" />
           </v-avatar>
           <div class="flex-grow-1">
             <div class="text-body-2 font-weight-bold" style="line-height: 1.3">{{ alert.patientName }}</div>
-            <div class="text-caption text-medium-emphasis mt-1" style="line-height: 1.4">{{ alert.message }}</div>
-            <div class="text-caption mt-2" style="opacity: 0.5; font-size: 0.65rem">
-              {{ formatTime(alert.timestamp) }}
-            </div>
           </div>
           <v-btn
             icon="mdi-close"
@@ -36,6 +32,12 @@
             density="compact"
             @click.stop="$emit('acknowledge', alert.id)"
           />
+        </div>
+        <div class="alert-details">
+          <div class="text-caption text-medium-emphasis" style="line-height: 1.4">{{ alert.message }}</div>
+          <div class="text-caption mt-1" style="opacity: 0.5; font-size: 0.65rem">
+            {{ formatTime(alert.timestamp) }}
+          </div>
         </div>
       </v-sheet>
     </div>
@@ -125,5 +127,9 @@ function formatTime(timestamp: string) {
 }
 .alerts-card {
   transition: box-shadow 200ms cubic-bezier(0.2, 0, 0, 1);
+}
+.alert-details {
+  margin-left: 44px;
+  margin-top: 4px;
 }
 </style>
