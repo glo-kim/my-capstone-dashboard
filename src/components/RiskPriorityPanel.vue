@@ -216,13 +216,6 @@ const filteredCases = computed(() => {
   })
 })
 
-function caseActivities(caseId: string) {
-  return props.activities
-    .filter((a) => a.caseId === caseId)
-    .sort((a, b) => b.date.localeCompare(a.date))
-    .slice(0, 4)
-}
-
 function riskColor(level: string) {
   if (level === 'high') return 'error'
   if (level === 'medium') return 'warning'
@@ -237,16 +230,6 @@ function statusColor(status: string) {
 function formatDate(date: string) {
   const d = new Date(date + 'T00:00:00')
   return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
-}
-
-function activityIcon(type: string) {
-  const map: Record<string, string> = {
-    'phone-call': 'mdi-phone-outline',
-    'home-visit': 'mdi-home-account',
-    'coordination': 'mdi-swap-horizontal',
-    'documentation': 'mdi-file-document-outline',
-  }
-  return map[type] || 'mdi-circle-small'
 }
 </script>
 
