@@ -90,6 +90,36 @@
     <!-- Second Row: Cases (tabbed) + Risk & Priority, Alerts below Risk -->
     <v-row>
       <v-col cols="12" md="4">
+        <!-- Alerts (collapsible) -->
+        <v-card variant="flat" class="mb-4" style="background: rgb(var(--v-theme-surface-light)); border: 1px solid rgba(var(--v-theme-outline-variant), 0.5)">
+          <v-card-title
+            class="d-flex align-center pa-4"
+            style="cursor: pointer; min-height: 48px"
+            @click="alertsExpanded = !alertsExpanded"
+          >
+            <span class="section-title" style="margin: 0; line-height: 1; align-self: center; display: inline-flex; align-items: center; height: 24px">Alerts</span>
+            <v-badge
+              v-if="unacknowledgedAlertCount > 0"
+              :content="unacknowledgedAlertCount"
+              color="error"
+              inline
+              class="ml-2"
+            />
+            <v-spacer />
+            <v-icon :icon="alertsExpanded ? 'mdi-chevron-up' : 'mdi-chevron-down'" size="20" />
+          </v-card-title>
+          <v-expand-transition>
+            <div v-show="alertsExpanded" class="px-4 pb-4">
+              <AlertsPanel
+                :alerts="alerts"
+                embedded
+                @acknowledge="acknowledgeAlert"
+              />
+            </div>
+          </v-expand-transition>
+        </v-card>
+
+        <!-- Caseload tabbed card -->
         <v-card variant="flat" class="pa-5" style="background: rgb(var(--v-theme-surface-light)); border: 1px solid rgba(var(--v-theme-outline-variant), 0.5)">
           <v-tabs v-model="casesTab" density="compact" color="primary" class="mb-4">
             <v-tab value="active">Active Cases</v-tab>
@@ -152,13 +182,6 @@
             </v-tabs-window-item>
           </v-tabs-window>
         </v-card>
-
-        <div class="mt-4">
-          <AlertsPanel
-            :alerts="alerts"
-            @acknowledge="acknowledgeAlert"
-          />
-        </div>
       </v-col>
 
       <v-col cols="12" md="8">
@@ -287,6 +310,11 @@ const alerts = ref([...data.alerts])
 const drawerOpen = ref(false)
 const selectedCase = ref<any>(null)
 const casesTab = ref('active')
+const alertsExpanded = ref(false)
+
+const unacknowledgedAlertCount = computed(() =>
+  alerts.value.filter((a: any) => !a.acknowledged).length
+)
 
 function onCaseSelect(item: any) {
   if (item) {

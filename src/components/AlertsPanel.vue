@@ -1,6 +1,6 @@
 <template>
-  <v-card variant="flat" class="alerts-card pa-5" style="background: rgb(var(--v-theme-surface-light)); border: 1px solid rgba(var(--v-theme-outline-variant), 0.5)">
-    <div class="d-flex align-center justify-space-between mb-4">
+  <component :is="embedded ? 'div' : 'v-card'" v-bind="!embedded ? { variant: 'flat', class: 'alerts-card pa-5', style: 'background: rgb(var(--v-theme-surface-light)); border: 1px solid rgba(var(--v-theme-outline-variant), 0.5)' } : {}">
+    <div v-if="!embedded" class="d-flex align-center justify-space-between mb-4">
       <div class="section-title">Alerts</div>
       <v-badge
         v-if="unacknowledgedCount > 0"
@@ -46,7 +46,7 @@
       <v-icon icon="mdi-bell-check-outline" size="40" class="mb-2" color="success" />
       <div class="text-body-2">All clear — no alerts</div>
     </div>
-  </v-card>
+  </component>
 </template>
 
 <script setup lang="ts">
@@ -65,6 +65,7 @@ interface Alert {
 
 const props = defineProps<{
   alerts: Alert[]
+  embedded?: boolean
 }>()
 
 defineEmits<{
