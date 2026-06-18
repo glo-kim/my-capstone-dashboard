@@ -203,92 +203,128 @@
       location="right"
       width="400"
       temporary
+      style="height: 100vh; top: 0"
     >
-      <div v-if="selectedCase" class="pa-5">
-        <div class="d-flex align-center justify-space-between mb-4">
-          <div class="text-subtitle-1 font-weight-bold">
-            {{ selectedCase.patient.firstName }} {{ selectedCase.patient.lastName }}
-            <v-chip size="x-small" :color="riskColor(selectedCase.patient.riskLevel)" variant="flat" class="ml-2">
-              Risk {{ selectedCase.patient.riskScore }}
-            </v-chip>
+      <div v-if="selectedCase" class="d-flex flex-column" style="height: 100vh">
+        <!-- Sticky header -->
+        <div class="pa-5 pb-0" style="flex-shrink: 0; position: sticky; top: 0; z-index: 1; background: rgb(var(--v-theme-surface))">
+          <div class="d-flex align-center justify-space-between mb-1">
+            <div class="text-subtitle-1 font-weight-bold">
+              {{ selectedCase.patient.firstName }} {{ selectedCase.patient.lastName }}
+              <v-chip size="x-small" :color="riskColor(selectedCase.patient.riskLevel)" variant="flat" class="ml-2">
+                Risk {{ selectedCase.patient.riskScore }}
+              </v-chip>
+            </div>
+            <v-btn icon="mdi-close" size="small" variant="text" @click="drawerOpen = false" />
           </div>
-          <v-btn icon="mdi-close" size="small" variant="text" @click="drawerOpen = false" />
-        </div>
-
-        <div class="mb-4">
-          <div class="section-title mb-2">Contact</div>
-          <div class="text-body-2">{{ selectedCase.patient.phone }}</div>
-          <div class="text-body-2 mt-1">{{ selectedCase.patient.address }}</div>
-          <div class="text-body-2 mt-1">PCP: {{ selectedCase.patient.primaryCareProvider }}</div>
-          <div class="text-body-2">Insurance: {{ selectedCase.patient.insurance }}</div>
-        </div>
-
-        <v-divider class="mb-4" />
-
-        <div class="mb-4">
-          <div class="section-title mb-2">Comorbidities</div>
-          <v-chip
-            v-for="c in selectedCase.patient.comorbidities"
-            :key="c"
-            size="x-small"
-            variant="tonal"
-            class="mr-1 mb-1"
-          >
-            {{ c }}
-          </v-chip>
-          <div v-if="selectedCase.patient.comorbidities.length === 0" class="text-body-2 text-medium-emphasis">None</div>
-        </div>
-
-        <v-divider class="mb-4" />
-
-        <div class="mb-4">
-          <div class="section-title mb-2">Care Goals</div>
-          <div v-for="(goal, i) in selectedCase.case.careGoals" :key="i" class="d-flex align-center gap-1 mb-1">
-            <v-icon
-              :icon="i < selectedCase.case.goalsAchieved ? 'mdi-check-circle' : 'mdi-circle-outline'"
-              :color="i < selectedCase.case.goalsAchieved ? 'success' : 'grey'"
-              size="16"
-            />
-            <span class="text-body-2">{{ goal }}</span>
+          <div class="text-caption text-medium-emphasis mb-4">
+            {{ selectedCase.case.id }} · {{ selectedCase.patient.age }}y · {{ selectedCase.patient.gender }}
           </div>
+
+          <v-tabs v-model="drawerTab" density="compact" color="primary">
+            <v-tab value="care">Care Activity</v-tab>
+            <v-tab value="info">Patient Info</v-tab>
+          </v-tabs>
         </div>
 
-        <v-divider class="mb-4" />
+        <!-- Scrollable content -->
+        <div class="px-5 pt-4 pb-5" style="flex: 1; overflow-y: auto">
+          <v-tabs-window v-model="drawerTab">
+          <!-- Tab 1: Patient Information -->
+          <v-tabs-window-item value="info">
+            <div class="mb-4">
+              <div class="section-title mb-2">Main Information</div>
+              <div class="text-body-2"><span class="font-weight-medium">Mobile:</span> {{ selectedCase.patient.phone }}</div>
+              <div class="text-body-2 mt-1">{{ selectedCase.patient.address }}</div>
+              <div class="text-body-2 mt-1">Insurance: {{ selectedCase.patient.insurance }}</div>
+            </div>
 
-        <div v-if="selectedCase.case.barriers.length > 0" class="mb-4">
-          <div class="section-title mb-2">Barriers</div>
-          <v-chip
-            v-for="b in selectedCase.case.barriers"
-            :key="b"
-            size="small"
-            color="warning"
-            variant="tonal"
-            class="mr-1 mb-1"
-          >
-            {{ b }}
-          </v-chip>
-        </div>
+            <v-divider class="mb-4" />
 
-        <v-divider v-if="selectedCase.case.barriers.length > 0" class="mb-4" />
+            <div class="mb-4">
+              <div class="section-title mb-2">Provider Contact</div>
+              <div class="text-body-2 font-weight-medium">{{ selectedCase.patient.primaryCareProvider }}</div>
+              <div class="text-body-2 mt-1"><span class="font-weight-medium">Office:</span> (503) 555-0100</div>
+              <div class="text-body-2 mt-1"><span class="font-weight-medium">Email:</span> {{ selectedCase.patient.primaryCareProvider.split(' ').pop()?.toLowerCase() }}@evergreenhealth.org</div>
+              <div class="text-body-2 mt-1"><span class="font-weight-medium">Location:</span> Evergreen Health Clinic, Portland, OR</div>
+            </div>
 
-        <div class="mb-4">
-          <div class="section-title mb-2">Latest Notes</div>
-          <div class="text-body-2">{{ selectedCase.case.notes }}</div>
-        </div>
+            <v-divider class="mb-4" />
 
-        <v-divider class="mb-4" />
+            <div class="mb-4">
+              <div class="section-title mb-2">Comorbidities</div>
+              <v-chip
+                v-for="c in selectedCase.patient.comorbidities"
+                :key="c"
+                size="x-small"
+                variant="tonal"
+                class="mr-1 mb-1"
+              >
+                {{ c }}
+              </v-chip>
+              <div v-if="selectedCase.patient.comorbidities.length === 0" class="text-body-2 text-medium-emphasis">None</div>
+            </div>
 
-        <div>
-          <div class="section-title mb-2">Recent Activity</div>
-          <div
-            v-for="act in caseActivities(selectedCase.case.id)"
-            :key="act.id"
-            class="d-flex align-center gap-2 mb-2"
-          >
-            <v-icon :icon="activityIcon(act.type)" size="16" color="primary" />
-            <span class="text-caption text-medium-emphasis">{{ formatDate(act.date) }}</span>
-            <span class="text-body-2">{{ act.outcome }}</span>
-          </div>
+            <div>
+              <v-divider class="mb-4" />
+              <div class="section-title mb-2">Barriers</div>
+              <v-chip
+                v-for="b in selectedCase.case.barriers"
+                :key="b"
+                size="small"
+                color="warning"
+                variant="tonal"
+                class="mr-1 mb-1"
+              >
+                {{ b }}
+              </v-chip>
+            </div>
+
+          </v-tabs-window-item>
+
+          <!-- Tab 2: Care Activity -->
+          <v-tabs-window-item value="care">
+            <div class="mb-4">
+              <div class="section-title mb-2">Care Goals</div>
+              <div v-for="(goal, i) in selectedCase.case.careGoals" :key="i" class="d-flex align-center mb-1">
+                <v-icon
+                  :icon="i < selectedCase.case.goalsAchieved ? 'mdi-check-circle' : 'mdi-circle-outline'"
+                  :color="i < selectedCase.case.goalsAchieved ? 'success' : 'grey'"
+                  size="16"
+                  class="mr-3"
+                />
+                <span class="text-body-2">{{ goal }}</span>
+              </div>
+            </div>
+
+            <v-divider class="mb-4" />
+
+            <div class="mb-4">
+              <div class="section-title mb-2">Latest Notes</div>
+              <div class="text-body-2">{{ selectedCase.case.notes }}</div>
+            </div>
+
+            <v-divider class="mb-4" />
+
+            <div>
+              <div class="section-title mb-2">Recent Activity</div>
+              <div
+                v-for="act in caseActivities(selectedCase.case.id)"
+                :key="act.id"
+                class="mb-3"
+              >
+                <div class="d-flex align-center mb-1">
+                  <span class="text-caption text-medium-emphasis">{{ formatDate(act.date) }}</span>
+                  <span style="margin-left: auto" class="d-flex align-center">
+                    <v-icon :icon="activityIcon(act.type)" size="14" color="primary" class="mr-3" />
+                    <span class="text-caption" style="color: rgb(var(--v-theme-primary))">{{ activityLabel(act.type) }}</span>
+                  </span>
+                </div>
+                <div class="text-body-2">{{ act.outcome }}</div>
+              </div>
+            </div>
+          </v-tabs-window-item>
+        </v-tabs-window>
         </div>
       </div>
     </v-navigation-drawer>
@@ -296,7 +332,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import metricsData from '../data/metrics.json'
 
 import KpiCard from '../components/KpiCard.vue'
@@ -308,9 +344,14 @@ const data = metricsData
 
 const alerts = ref([...data.alerts])
 const drawerOpen = ref(false)
+
+watch(drawerOpen, (open) => {
+  document.documentElement.style.overflow = open ? 'hidden' : ''
+})
 const selectedCase = ref<any>(null)
 const casesTab = ref('active')
 const alertsExpanded = ref(false)
+const drawerTab = ref('care')
 
 const unacknowledgedAlertCount = computed(() =>
   alerts.value.filter((a: any) => !a.acknowledged).length
@@ -373,6 +414,16 @@ function activityIcon(type: string) {
     'documentation': 'mdi-file-document-outline',
   }
   return map[type] || 'mdi-circle-small'
+}
+
+function activityLabel(type: string) {
+  const map: Record<string, string> = {
+    'phone-call': 'Phone Call',
+    'home-visit': 'Home Visit',
+    'coordination': 'Coordination',
+    'documentation': 'Documentation',
+  }
+  return map[type] || type
 }
 </script>
 
