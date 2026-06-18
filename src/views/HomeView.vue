@@ -1,5 +1,5 @@
 <template>
-  <v-layout>
+  <v-layout style="min-height: 100vh">
     <v-main>
       <v-container fluid class="pa-5 pa-md-8">
     <!-- Header -->
@@ -203,9 +203,10 @@
       location="right"
       width="400"
       temporary
-      style="height: 100vh; top: 0"
+      fixed
+      style="position: fixed; height: calc(100vh - 64px); top: 64px"
     >
-      <div v-if="selectedCase" class="d-flex flex-column" style="height: 100vh">
+      <div v-if="selectedCase" class="d-flex flex-column" style="height: calc(100vh - 64px)">
         <!-- Sticky header -->
         <div class="pa-5 pb-0" style="flex-shrink: 0; position: sticky; top: 0; z-index: 1; background: rgb(var(--v-theme-surface))">
           <div class="d-flex align-center justify-space-between mb-1">
@@ -278,6 +279,7 @@
               >
                 {{ b }}
               </v-chip>
+              <div v-if="selectedCase.case.barriers.length === 0" class="text-body-2 text-medium-emphasis">None</div>
             </div>
 
           </v-tabs-window-item>
