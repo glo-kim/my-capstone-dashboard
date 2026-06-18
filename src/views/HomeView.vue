@@ -85,24 +85,9 @@
       </v-col>
     </v-row>
 
-    <!-- Main 2-Column Layout -->
+    <!-- Second Row: Caseload, Alerts, Recently Closed -->
     <v-row>
-      <!-- Left Column: Risk & Priority (primary focus) -->
-      <v-col cols="12" lg="9" order="1">
-        <RiskPriorityPanel
-          :cases="data.cases"
-          :patients="data.patients"
-          :activities="data.activities"
-        />
-
-        <!-- Trend Chart below risk table -->
-        <div class="mt-4">
-          <TrendChart :trend="data.weeklyTrend" />
-        </div>
-      </v-col>
-
-      <!-- Right Column: Caseload, Alerts, Recently Closed -->
-      <v-col cols="12" lg="3" order="2">
+      <v-col cols="12" md="4">
         <CaseloadPanel
           :summary="data.summary"
           :coordinator="data.coordinator"
@@ -110,16 +95,18 @@
           :goal-completion="data.outcomes.goalCompletionByCategory"
           :readmission-stats="data.outcomes.readmissionStats"
         />
+      </v-col>
 
-        <div class="mt-4">
-          <AlertsPanel
-            :alerts="alerts"
-            @acknowledge="acknowledgeAlert"
-          />
-        </div>
+      <v-col cols="12" md="4">
+        <AlertsPanel
+          :alerts="alerts"
+          @acknowledge="acknowledgeAlert"
+        />
+      </v-col>
 
+      <v-col cols="12" md="4">
         <!-- Recent Closures -->
-        <v-card variant="flat" class="pa-5 mt-4" style="background: rgb(var(--v-theme-surface-light)); border: 1px solid rgba(var(--v-theme-outline-variant), 0.5)">
+        <v-card variant="flat" class="pa-5" style="background: rgb(var(--v-theme-surface-light)); border: 1px solid rgba(var(--v-theme-outline-variant), 0.5)">
           <div class="section-title mb-4">Recently Closed</div>
           <div
             v-for="(closed, index) in data.outcomes.closedCasesThisMonth"
@@ -162,6 +149,24 @@
             </div>
           </div>
         </v-card>
+      </v-col>
+    </v-row>
+
+    <!-- Third Row: Risk & Priority (full width) -->
+    <v-row>
+      <v-col cols="12">
+        <RiskPriorityPanel
+          :cases="data.cases"
+          :patients="data.patients"
+          :activities="data.activities"
+        />
+      </v-col>
+    </v-row>
+
+    <!-- Trend Chart -->
+    <v-row>
+      <v-col cols="12">
+        <TrendChart :trend="data.weeklyTrend" />
       </v-col>
     </v-row>
   </v-container>
