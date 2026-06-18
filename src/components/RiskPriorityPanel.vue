@@ -48,23 +48,12 @@
           @click="selectedCase = selectedCase?.case.id === item.case.id ? null : item"
         >
           <td>
-            <div class="d-flex align-center gap-2">
-              <v-avatar
-                :color="riskColor(item.patient.riskLevel)"
-                size="32"
-                variant="tonal"
-              >
-                <span class="text-caption font-weight-bold">
-                  {{ item.patient.firstName[0] }}{{ item.patient.lastName[0] }}
-                </span>
-              </v-avatar>
-              <div>
-                <div class="text-body-2 font-weight-medium">
-                  {{ item.patient.lastName }}, {{ item.patient.firstName }}
-                </div>
-                <div class="text-caption text-medium-emphasis">
-                  {{ item.patient.age }}y · {{ item.patient.gender[0] }}
-                </div>
+            <div>
+              <div class="text-body-2 font-weight-medium">
+                {{ item.patient.lastName }}, {{ item.patient.firstName }}
+              </div>
+              <div class="text-caption text-medium-emphasis">
+                {{ item.case.id }} · {{ item.patient.age }}y · {{ item.patient.gender[0] }}
               </div>
             </div>
           </td>

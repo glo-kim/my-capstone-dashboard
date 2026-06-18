@@ -103,7 +103,7 @@ export default createVuetify({
   },
   defaults: {
     VCard: {
-      rounded: 'xl',
+      rounded: 'lg',
       elevation: 0,
       border: true,
     },
@@ -117,13 +117,13 @@ export default createVuetify({
       density: 'comfortable',
     },
     VSheet: {
-      rounded: 'xl',
+      rounded: 'lg',
     },
     VChip: {
       rounded: 'pill',
     },
     VAlert: {
-      rounded: 'xl',
+      rounded: 'lg',
       border: 'start',
       elevation: 0,
     },

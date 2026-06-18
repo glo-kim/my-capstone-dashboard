@@ -10,13 +10,16 @@
           {{ todayFormatted }} · <span class="font-weight-medium">{{ data.summary.totalActiveCases }} active cases</span>
         </div>
       </div>
-      <v-btn
-        :icon="darkMode ? 'mdi-white-balance-sunny' : 'mdi-moon-waning-crescent'"
-        variant="tonal"
-        color="secondary"
-        size="small"
-        @click="toggleTheme"
-      />
+      <div class="d-flex align-center gap-2">
+        <v-btn
+          prepend-icon="mdi-plus"
+          variant="flat"
+          color="primary"
+          size="small"
+        >
+          Create New Case
+        </v-btn>
+      </div>
     </div>
 
     <!-- KPI Row -->
@@ -82,21 +85,10 @@
       </v-col>
     </v-row>
 
-    <!-- Main 3-Column Layout -->
+    <!-- Main 2-Column Layout -->
     <v-row>
-      <!-- Left Column: Caseload & Activity -->
-      <v-col cols="12" lg="3" order="2" order-lg="1">
-        <CaseloadPanel
-          :summary="data.summary"
-          :coordinator="data.coordinator"
-          :activity-summary="data.activitySummary"
-          :goal-completion="data.outcomes.goalCompletionByCategory"
-          :readmission-stats="data.outcomes.readmissionStats"
-        />
-      </v-col>
-
-      <!-- Center Column: Risk & Priority (primary focus) -->
-      <v-col cols="12" lg="6" order="1" order-lg="2">
+      <!-- Left Column: Risk & Priority (primary focus) -->
+      <v-col cols="12" lg="9" order="1">
         <RiskPriorityPanel
           :cases="data.cases"
           :patients="data.patients"
@@ -109,12 +101,22 @@
         </div>
       </v-col>
 
-      <!-- Right Column: Alerts -->
-      <v-col cols="12" lg="3" order="3">
-        <AlertsPanel
-          :alerts="alerts"
-          @acknowledge="acknowledgeAlert"
+      <!-- Right Column: Caseload, Alerts, Recently Closed -->
+      <v-col cols="12" lg="3" order="2">
+        <CaseloadPanel
+          :summary="data.summary"
+          :coordinator="data.coordinator"
+          :activity-summary="data.activitySummary"
+          :goal-completion="data.outcomes.goalCompletionByCategory"
+          :readmission-stats="data.outcomes.readmissionStats"
         />
+
+        <div class="mt-4">
+          <AlertsPanel
+            :alerts="alerts"
+            @acknowledge="acknowledgeAlert"
+          />
+        </div>
 
         <!-- Recent Closures -->
         <v-card variant="flat" class="pa-5 mt-4" style="background: rgb(var(--v-theme-surface-light)); border: 1px solid rgba(var(--v-theme-outline-variant), 0.5)">
@@ -167,7 +169,6 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { useTheme } from 'vuetify'
 import metricsData from '../data/metrics.json'
 
 import KpiCard from '../components/KpiCard.vue'
@@ -176,17 +177,9 @@ import RiskPriorityPanel from '../components/RiskPriorityPanel.vue'
 import AlertsPanel from '../components/AlertsPanel.vue'
 import TrendChart from '../components/TrendChart.vue'
 
-const theme = useTheme()
-const darkMode = ref(false)
-
 const data = metricsData
 
 const alerts = ref([...data.alerts])
-
-function toggleTheme() {
-  darkMode.value = !darkMode.value
-  theme.global.name.value = darkMode.value ? 'md3Dark' : 'md3Light'
-}
 
 function acknowledgeAlert(id: string) {
   const alert = alerts.value.find((a) => a.id === id)
