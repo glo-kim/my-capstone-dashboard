@@ -284,6 +284,31 @@
 
           <!-- Tab 2: Care Activity -->
           <v-tabs-window-item value="care">
+            <div v-if="patientAlerts(selectedCase.patient.id).length > 0" class="mb-4">
+              <div class="section-title mb-2">Alerts</div>
+              <v-sheet
+                v-for="alert in patientAlerts(selectedCase.patient.id)"
+                :key="alert.id"
+                :color="alert.type === 'critical' ? 'error-container' : alert.type === 'warning' ? 'warning-container' : 'info-container'"
+                rounded="lg"
+                class="pa-3 mb-2"
+                :style="{ borderLeft: `3px solid rgb(var(--v-theme-${alert.type === 'critical' ? 'error' : alert.type === 'warning' ? 'warning' : 'info'}))` }"
+              >
+                <div class="d-flex align-center mb-1">
+                  <v-icon
+                    :icon="alert.type === 'critical' ? 'mdi-alert-circle' : alert.type === 'warning' ? 'mdi-alert' : 'mdi-information'"
+                    :color="alert.type === 'critical' ? 'error' : alert.type === 'warning' ? 'warning' : 'info'"
+                    size="16"
+                    class="mr-2"
+                  />
+                  <span class="text-caption font-weight-bold text-uppercase">{{ alert.type }}</span>
+                </div>
+                <div class="text-body-2">{{ alert.message }}</div>
+              </v-sheet>
+            </div>
+
+            <v-divider v-if="patientAlerts(selectedCase.patient.id).length > 0" class="mb-4" />
+
             <div class="mb-4">
               <div class="section-title mb-2">Care Goals</div>
               <div v-for="(goal, i) in selectedCase.case.careGoals" :key="i" class="d-flex align-center mb-1">
@@ -370,6 +395,10 @@ function onCaseSelect(item: any) {
 function acknowledgeAlert(id: string) {
   const alert = alerts.value.find((a) => a.id === id)
   if (alert) alert.acknowledged = true
+}
+
+function patientAlerts(patientId: string) {
+  return alerts.value.filter((a: any) => a.patientId === patientId && !a.acknowledged)
 }
 
 const greeting = computed(() => {
