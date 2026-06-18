@@ -45,7 +45,7 @@
           :key="item.case.id"
           :class="{ 'overdue-row': item.case.followUpOverdue, 'selected-row': selectedCase?.case.id === item.case.id }"
           style="cursor: pointer"
-          @click="selectedCase = selectedCase?.case.id === item.case.id ? null : item"
+          @click="selectCase(item)"
         >
           <td>
             <div>
@@ -119,91 +119,6 @@
       <div class="text-body-1">No cases match your filters</div>
     </div>
 
-    <!-- Expandable detail panel -->
-    <v-expand-transition>
-      <v-sheet
-        v-if="selectedCase"
-        color="surface-variant"
-        rounded="xl"
-        class="pa-4 mt-4"
-      >
-        <div class="d-flex align-center justify-space-between mb-3">
-          <div class="text-subtitle-1 font-weight-bold">
-            {{ selectedCase.patient.firstName }} {{ selectedCase.patient.lastName }}
-            <v-chip size="x-small" :color="riskColor(selectedCase.patient.riskLevel)" variant="flat" class="ml-2">
-              Risk {{ selectedCase.patient.riskScore }}
-            </v-chip>
-          </div>
-          <v-btn icon="mdi-close" size="small" variant="text" @click="selectedCase = null" />
-        </div>
-
-        <v-row dense>
-          <v-col cols="12" md="4">
-            <div class="text-caption text-medium-emphasis mb-1">Contact</div>
-            <div class="text-body-2">{{ selectedCase.patient.phone }}</div>
-            <div class="text-body-2 mt-1">{{ selectedCase.patient.address }}</div>
-            <div class="text-body-2 mt-1">PCP: {{ selectedCase.patient.primaryCareProvider }}</div>
-            <div class="text-body-2">Insurance: {{ selectedCase.patient.insurance }}</div>
-          </v-col>
-          <v-col cols="12" md="4">
-            <div class="text-caption text-medium-emphasis mb-1">Comorbidities</div>
-            <v-chip
-              v-for="c in selectedCase.patient.comorbidities"
-              :key="c"
-              size="x-small"
-              variant="tonal"
-              class="mr-1 mb-1"
-            >
-              {{ c }}
-            </v-chip>
-            <div v-if="selectedCase.patient.comorbidities.length === 0" class="text-body-2 text-medium-emphasis">None</div>
-          </v-col>
-          <v-col cols="12" md="4">
-            <div class="text-caption text-medium-emphasis mb-1">Care Goals</div>
-            <div v-for="(goal, i) in selectedCase.case.careGoals" :key="i" class="d-flex align-center gap-1 mb-1">
-              <v-icon
-                :icon="i < selectedCase.case.goalsAchieved ? 'mdi-check-circle' : 'mdi-circle-outline'"
-                :color="i < selectedCase.case.goalsAchieved ? 'success' : 'grey'"
-                size="16"
-              />
-              <span class="text-body-2">{{ goal }}</span>
-            </div>
-          </v-col>
-        </v-row>
-
-        <div v-if="selectedCase.case.barriers.length > 0" class="mt-3">
-          <div class="text-caption text-medium-emphasis mb-1">Barriers</div>
-          <v-chip
-            v-for="b in selectedCase.case.barriers"
-            :key="b"
-            size="small"
-            color="warning"
-            variant="tonal"
-            class="mr-1 mb-1"
-          >
-            {{ b }}
-          </v-chip>
-        </div>
-
-        <div class="mt-3">
-          <div class="text-caption text-medium-emphasis mb-1">Latest Notes</div>
-          <div class="text-body-2">{{ selectedCase.case.notes }}</div>
-        </div>
-
-        <div class="mt-3">
-          <div class="text-caption text-medium-emphasis mb-2">Recent Activity</div>
-          <div
-            v-for="act in caseActivities(selectedCase.case.id)"
-            :key="act.id"
-            class="d-flex align-center gap-2 mb-2"
-          >
-            <v-icon :icon="activityIcon(act.type)" size="16" color="primary" />
-            <span class="text-caption text-medium-emphasis">{{ formatDate(act.date) }}</span>
-            <span class="text-body-2">{{ act.outcome }}</span>
-          </div>
-        </div>
-      </v-sheet>
-    </v-expand-transition>
   </v-card>
 </template>
 
@@ -263,10 +178,19 @@ const props = defineProps<{
   activities: Activity[]
 }>()
 
+const emit = defineEmits<{
+  select: [item: CaseWithPatient | null]
+}>()
+
 const search = ref('')
 const statusFilter = ref<string[]>([])
 const riskFilter = ref<string[]>([])
 const selectedCase = ref<CaseWithPatient | null>(null)
+
+function selectCase(item: CaseWithPatient) {
+  selectedCase.value = selectedCase.value?.case.id === item.case.id ? null : item
+  emit('select', selectedCase.value)
+}
 
 const casePatientPairs = computed<CaseWithPatient[]>(() => {
   return props.cases

@@ -1,5 +1,7 @@
 <template>
-  <v-container fluid class="pa-5 pa-md-8">
+  <v-layout>
+    <v-main>
+      <v-container fluid class="pa-5 pa-md-8">
     <!-- Header -->
     <div class="d-flex align-center justify-space-between mb-6">
       <div>
@@ -159,6 +161,7 @@
           :cases="data.cases"
           :patients="data.patients"
           :activities="data.activities"
+          @select="onCaseSelect"
         />
       </v-col>
     </v-row>
@@ -170,6 +173,104 @@
       </v-col>
     </v-row>
   </v-container>
+    </v-main>
+
+    <!-- Case Detail Drawer -->
+    <v-navigation-drawer
+      v-model="drawerOpen"
+      location="right"
+      width="400"
+      temporary
+    >
+      <div v-if="selectedCase" class="pa-5">
+        <div class="d-flex align-center justify-space-between mb-4">
+          <div class="text-subtitle-1 font-weight-bold">
+            {{ selectedCase.patient.firstName }} {{ selectedCase.patient.lastName }}
+            <v-chip size="x-small" :color="riskColor(selectedCase.patient.riskLevel)" variant="flat" class="ml-2">
+              Risk {{ selectedCase.patient.riskScore }}
+            </v-chip>
+          </div>
+          <v-btn icon="mdi-close" size="small" variant="text" @click="drawerOpen = false" />
+        </div>
+
+        <div class="mb-4">
+          <div class="section-title mb-2">Contact</div>
+          <div class="text-body-2">{{ selectedCase.patient.phone }}</div>
+          <div class="text-body-2 mt-1">{{ selectedCase.patient.address }}</div>
+          <div class="text-body-2 mt-1">PCP: {{ selectedCase.patient.primaryCareProvider }}</div>
+          <div class="text-body-2">Insurance: {{ selectedCase.patient.insurance }}</div>
+        </div>
+
+        <v-divider class="mb-4" />
+
+        <div class="mb-4">
+          <div class="section-title mb-2">Comorbidities</div>
+          <v-chip
+            v-for="c in selectedCase.patient.comorbidities"
+            :key="c"
+            size="x-small"
+            variant="tonal"
+            class="mr-1 mb-1"
+          >
+            {{ c }}
+          </v-chip>
+          <div v-if="selectedCase.patient.comorbidities.length === 0" class="text-body-2 text-medium-emphasis">None</div>
+        </div>
+
+        <v-divider class="mb-4" />
+
+        <div class="mb-4">
+          <div class="section-title mb-2">Care Goals</div>
+          <div v-for="(goal, i) in selectedCase.case.careGoals" :key="i" class="d-flex align-center gap-1 mb-1">
+            <v-icon
+              :icon="i < selectedCase.case.goalsAchieved ? 'mdi-check-circle' : 'mdi-circle-outline'"
+              :color="i < selectedCase.case.goalsAchieved ? 'success' : 'grey'"
+              size="16"
+            />
+            <span class="text-body-2">{{ goal }}</span>
+          </div>
+        </div>
+
+        <v-divider class="mb-4" />
+
+        <div v-if="selectedCase.case.barriers.length > 0" class="mb-4">
+          <div class="section-title mb-2">Barriers</div>
+          <v-chip
+            v-for="b in selectedCase.case.barriers"
+            :key="b"
+            size="small"
+            color="warning"
+            variant="tonal"
+            class="mr-1 mb-1"
+          >
+            {{ b }}
+          </v-chip>
+        </div>
+
+        <v-divider v-if="selectedCase.case.barriers.length > 0" class="mb-4" />
+
+        <div class="mb-4">
+          <div class="section-title mb-2">Latest Notes</div>
+          <div class="text-body-2">{{ selectedCase.case.notes }}</div>
+        </div>
+
+        <v-divider class="mb-4" />
+
+        <div>
+          <div class="section-title mb-2">Recent Activity</div>
+          <div
+            v-for="act in caseActivities(selectedCase.case.id)"
+            :key="act.id"
+            class="d-flex align-center gap-2 mb-2"
+          >
+            <v-icon :icon="activityIcon(act.type)" size="16" color="primary" />
+            <span class="text-caption text-medium-emphasis">{{ formatDate(act.date) }}</span>
+            <span class="text-body-2">{{ act.outcome }}</span>
+          </div>
+        </div>
+      </div>
+    </v-navigation-drawer>
+  </v-layout>
 </template>
 
 <script setup lang="ts">
@@ -185,6 +286,18 @@ import TrendChart from '../components/TrendChart.vue'
 const data = metricsData
 
 const alerts = ref([...data.alerts])
+const drawerOpen = ref(false)
+const selectedCase = ref<any>(null)
+
+function onCaseSelect(item: any) {
+  if (item) {
+    selectedCase.value = item
+    drawerOpen.value = true
+  } else {
+    drawerOpen.value = false
+    selectedCase.value = null
+  }
+}
 
 function acknowledgeAlert(id: string) {
   const alert = alerts.value.find((a) => a.id === id)
@@ -210,6 +323,29 @@ const todayFormatted = computed(() =>
 function formatDate(date: string) {
   const d = new Date(date + 'T00:00:00')
   return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+}
+
+function riskColor(level: string) {
+  if (level === 'high') return 'error'
+  if (level === 'medium') return 'warning'
+  return 'success'
+}
+
+function caseActivities(caseId: string) {
+  return data.activities
+    .filter((a: any) => a.caseId === caseId)
+    .sort((a: any, b: any) => b.date.localeCompare(a.date))
+    .slice(0, 4)
+}
+
+function activityIcon(type: string) {
+  const map: Record<string, string> = {
+    'phone-call': 'mdi-phone-outline',
+    'home-visit': 'mdi-home-account',
+    'coordination': 'mdi-swap-horizontal',
+    'documentation': 'mdi-file-document-outline',
+  }
+  return map[type] || 'mdi-circle-small'
 }
 </script>
 
