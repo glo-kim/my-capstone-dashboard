@@ -31,7 +31,7 @@
       <v-text-field
         v-model="search"
         density="compact"
-        placeholder="Search patients..."
+        placeholder="Search Patient or Case"
         prepend-inner-icon="mdi-magnify"
         hide-details
         clearable
@@ -282,7 +282,8 @@ const filteredCases = computed(() => {
       const s = search.value.toLowerCase()
       const name = `${item.patient.firstName} ${item.patient.lastName}`.toLowerCase()
       const dx = item.patient.primaryDiagnosis.toLowerCase()
-      if (!name.includes(s) && !dx.includes(s)) return false
+      const caseId = item.case.id.toLowerCase()
+      if (!name.includes(s) && !dx.includes(s) && !caseId.includes(s)) return false
     }
     return true
   })
