@@ -222,8 +222,26 @@
             </div>
             <v-btn icon="mdi-close" size="small" variant="text" @click="drawerOpen = false" />
           </div>
-          <div class="text-caption text-medium-emphasis mb-4">
+          <div class="text-caption text-medium-emphasis mb-3">
             {{ selectedCase.case.id }} · {{ selectedCase.patient.age }}y · {{ selectedCase.patient.gender }}
+          </div>
+
+          <div class="d-flex align-center mb-4">
+            <v-tooltip text="Add Activity" location="bottom">
+              <template v-slot:activator="{ props }">
+                <v-btn v-bind="props" size="small" variant="tonal" color="primary" icon="mdi-plus" class="mr-2" />
+              </template>
+            </v-tooltip>
+            <v-tooltip text="Edit Patient" location="bottom">
+              <template v-slot:activator="{ props }">
+                <v-btn v-bind="props" size="small" variant="tonal" icon="mdi-account-edit" class="mr-2" />
+              </template>
+            </v-tooltip>
+            <v-tooltip text="Edit Care" location="bottom">
+              <template v-slot:activator="{ props }">
+                <v-btn v-bind="props" size="small" variant="tonal" icon="mdi-clipboard-edit" />
+              </template>
+            </v-tooltip>
           </div>
 
           <v-tabs v-model="drawerTab" density="compact" color="primary">
