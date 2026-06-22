@@ -7,30 +7,46 @@
 
     <v-tabs-window v-model="activeTab">
       <v-tabs-window-item value="patients">
-        <div class="d-flex align-center justify-space-between mb-4">
-          <v-text-field
-            v-model="search"
-            density="compact"
-            placeholder="Search patients..."
-            prepend-inner-icon="mdi-magnify"
-            hide-details
-            clearable
-            style="max-width: 240px"
-            variant="outlined"
-            rounded="pill"
-          />
-        </div>
-
     <div class="d-flex flex-wrap align-center gap-2 mb-4">
       <v-chip-group v-model="statusFilter" multiple selected-class="text-primary">
-        <v-chip filter variant="tonal" value="open" size="small">Open</v-chip>
-        <v-chip filter variant="tonal" value="in-progress" size="small">In Progress</v-chip>
+        <v-chip filter variant="tonal" value="open" size="small">Open {{ countByStatus('open') }}</v-chip>
+        <v-chip filter variant="tonal" value="in-progress" size="small">In Progress {{ countByStatus('in-progress') }}</v-chip>
       </v-chip-group>
       <v-chip-group v-model="riskFilter" multiple selected-class="text-primary" class="ml-1">
-        <v-chip filter variant="tonal" color="error" value="high" size="small">High Risk</v-chip>
-        <v-chip filter variant="tonal" color="warning" value="medium" size="small">Medium</v-chip>
-        <v-chip filter variant="tonal" color="success" value="low" size="small">Low</v-chip>
+        <v-chip filter variant="tonal" color="error" value="high" size="small">High Risk {{ countByRisk('high') }}</v-chip>
+        <v-chip filter variant="tonal" color="warning" value="medium" size="small">Medium {{ countByRisk('medium') }}</v-chip>
+        <v-chip filter variant="tonal" color="success" value="low" size="small">Low {{ countByRisk('low') }}</v-chip>
       </v-chip-group>
+      <v-chip
+        filter
+        variant="tonal"
+        color="error"
+        size="small"
+        :model-value="alertFilter"
+        @click="alertFilter = !alertFilter"
+      >
+        Alerts {{ countAlerts() }}
+      </v-chip>
+      <v-spacer />
+      <v-text-field
+        v-model="search"
+        density="compact"
+        placeholder="Search patients..."
+        prepend-inner-icon="mdi-magnify"
+        hide-details
+        clearable
+        style="max-width: 240px"
+        variant="outlined"
+        rounded="pill"
+      />
+      <v-btn
+        variant="text"
+        size="small"
+        prepend-icon="mdi-refresh"
+        @click="resetFilters"
+      >
+        Reset
+      </v-btn>
     </div>
 
     <v-table density="comfortable" hover class="risk-table">
@@ -40,7 +56,6 @@
           <th class="text-left">Diagnosis</th>
           <th class="text-center">Risk</th>
           <th class="text-center">Status</th>
-          <th class="text-center">Days</th>
           <th class="text-center">Goals</th>
           <th class="text-left">Next Follow-Up</th>
         </tr>
@@ -88,32 +103,47 @@
             </v-chip>
           </td>
           <td class="text-center">
-            <span
-              class="font-weight-bold"
-              :class="item.case.daysSinceLastContact >= 5 ? 'text-error' : item.case.daysSinceLastContact >= 3 ? 'text-warning' : ''"
-            >
-              {{ item.case.daysSinceLastContact }}d
-            </span>
-          </td>
-          <td class="text-center">
             <span class="text-body-2">
               {{ item.case.goalsAchieved }}/{{ item.case.totalGoals }}
             </span>
           </td>
           <td>
-            <div class="d-flex align-center gap-1">
-              <v-icon
-                v-if="item.case.followUpOverdue"
-                icon="mdi-alert-circle"
-                color="error"
-                size="16"
-              />
-              <span
-                class="text-body-2"
-                :class="{ 'text-error font-weight-bold': item.case.followUpOverdue }"
+            <div>
+              <div class="d-flex align-center">
+                <span
+                  class="text-body-2 font-weight-medium"
+                  :class="item.case.followUpOverdue ? 'text-error font-weight-bold' : (!hasInfoAlert(item.patient.id) && item.case.daysSinceLastContact >= 3) ? 'text-warning font-weight-bold' : ''"
+                >
+                  {{ formatDate(item.case.nextFollowUpDate) }}
+                </span>
+                <v-icon
+                  v-if="item.case.followUpOverdue"
+                  icon="mdi-alert-circle"
+                  color="error"
+                  size="16"
+                  class="ml-2"
+                />
+                <v-icon
+                  v-if="!item.case.followUpOverdue && item.case.daysSinceLastContact >= 3 && !hasInfoAlert(item.patient.id)"
+                  icon="mdi-alert"
+                  color="warning"
+                  size="16"
+                  class="ml-2"
+                />
+                <v-icon
+                  v-if="!item.case.followUpOverdue && hasInfoAlert(item.patient.id)"
+                  icon="mdi-information"
+                  color="info"
+                  size="16"
+                  class="ml-2"
+                />
+              </div>
+              <div
+                class="text-caption"
+                :class="item.case.daysSinceLastContact >= 5 ? 'text-error' : item.case.daysSinceLastContact >= 3 ? 'text-warning' : 'text-medium-emphasis'"
               >
-                {{ formatDate(item.case.nextFollowUpDate) }}
-              </span>
+                {{ item.case.daysSinceLastContact }}d since last contact
+              </div>
             </div>
           </td>
         </tr>
@@ -188,6 +218,7 @@ const props = defineProps<{
   cases: Case[]
   patients: Patient[]
   activities: Activity[]
+  alerts?: { id: string; type: string; patientId: string; message: string }[]
   trend?: any
 }>()
 
@@ -201,6 +232,31 @@ const search = ref('')
 const statusFilter = ref<string[]>([])
 const riskFilter = ref<string[]>([])
 const selectedCase = ref<CaseWithPatient | null>(null)
+const alertFilter = ref(false)
+
+function resetFilters() {
+  search.value = ''
+  statusFilter.value = []
+  riskFilter.value = []
+  alertFilter.value = false
+  selectedCase.value = null
+}
+
+function countByStatus(status: string) {
+  return casePatientPairs.value.filter(item => item.case.status === status).length
+}
+
+function countByRisk(level: string) {
+  return casePatientPairs.value.filter(item => item.patient.riskLevel === level).length
+}
+
+function countAlerts() {
+  return casePatientPairs.value.filter(item => item.case.followUpOverdue).length
+}
+
+function hasInfoAlert(patientId: string) {
+  return props.alerts?.some(a => a.patientId === patientId && a.type === 'info') ?? false
+}
 
 function selectCase(item: CaseWithPatient) {
   selectedCase.value = selectedCase.value?.case.id === item.case.id ? null : item
@@ -221,6 +277,7 @@ const filteredCases = computed(() => {
   return casePatientPairs.value.filter((item) => {
     if (statusFilter.value.length > 0 && !statusFilter.value.includes(item.case.status)) return false
     if (riskFilter.value.length > 0 && !riskFilter.value.includes(item.patient.riskLevel)) return false
+    if (alertFilter.value && !item.case.followUpOverdue) return false
     if (search.value) {
       const s = search.value.toLowerCase()
       const name = `${item.patient.firstName} ${item.patient.lastName}`.toLowerCase()

@@ -189,6 +189,7 @@
           :cases="data.cases"
           :patients="data.patients"
           :activities="data.activities"
+          :alerts="alerts"
           :trend="data.weeklyTrend"
           @select="onCaseSelect"
         />
