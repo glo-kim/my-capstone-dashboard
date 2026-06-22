@@ -216,6 +216,9 @@
               <v-chip size="x-small" :color="riskColor(selectedCase.patient.riskLevel)" variant="flat" class="ml-2">
                 Risk {{ selectedCase.patient.riskScore }}
               </v-chip>
+              <v-chip size="x-small" :color="selectedCase.case.status === 'open' ? 'warning' : 'info'" variant="tonal" class="ml-1">
+                {{ selectedCase.case.status === 'in-progress' ? 'In Progress' : 'Open' }}
+              </v-chip>
             </div>
             <v-btn icon="mdi-close" size="small" variant="text" @click="drawerOpen = false" />
           </div>
@@ -313,6 +316,13 @@
             <v-divider v-if="patientAlerts(selectedCase.patient.id).length > 0" class="mb-4" />
 
             <div class="mb-4">
+              <div class="section-title mb-2">Latest Notes</div>
+              <div class="text-body-2">{{ selectedCase.case.notes }}</div>
+            </div>
+
+            <v-divider class="mb-4" />
+
+            <div class="mb-4">
               <div class="section-title mb-2">Care Goals</div>
               <div v-for="(goal, i) in selectedCase.case.careGoals" :key="i" class="d-flex align-center mb-1">
                 <v-icon
@@ -328,8 +338,35 @@
             <v-divider class="mb-4" />
 
             <div class="mb-4">
-              <div class="section-title mb-2">Latest Notes</div>
-              <div class="text-body-2">{{ selectedCase.case.notes }}</div>
+              <div class="section-title mb-2">Next Follow-Up</div>
+              <div class="d-flex align-center">
+                <span
+                  class="text-body-2 font-weight-medium"
+                  :class="selectedCase.case.followUpOverdue ? 'text-error' : selectedCase.case.daysSinceLastContact >= 3 ? 'text-warning' : ''"
+                >
+                  {{ new Date(selectedCase.case.nextFollowUpDate + 'T00:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) }}
+                </span>
+                <v-icon
+                  v-if="selectedCase.case.followUpOverdue"
+                  icon="mdi-alert-circle"
+                  color="error"
+                  size="16"
+                  class="ml-2"
+                />
+                <v-icon
+                  v-if="!selectedCase.case.followUpOverdue && selectedCase.case.daysSinceLastContact >= 3"
+                  icon="mdi-alert"
+                  color="warning"
+                  size="16"
+                  class="ml-2"
+                />
+              </div>
+              <div
+                class="text-caption"
+                :class="selectedCase.case.daysSinceLastContact >= 5 ? 'text-error' : selectedCase.case.daysSinceLastContact >= 3 ? 'text-warning' : 'text-medium-emphasis'"
+              >
+                {{ selectedCase.case.daysSinceLastContact }}d since last contact
+              </div>
             </div>
 
             <v-divider class="mb-4" />
