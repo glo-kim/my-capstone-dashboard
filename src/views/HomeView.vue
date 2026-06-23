@@ -18,6 +18,7 @@
           variant="flat"
           color="primary"
           size="small"
+          style="padding-top: 8px; padding-bottom: 8px"
         >
           Create New Case
         </v-btn>
