@@ -104,6 +104,7 @@
               color="error"
               inline
               class="ml-2"
+              style="margin-top: -6px"
             />
             <v-spacer />
             <v-icon :icon="alertsExpanded ? 'mdi-chevron-up' : 'mdi-chevron-down'" size="20" />

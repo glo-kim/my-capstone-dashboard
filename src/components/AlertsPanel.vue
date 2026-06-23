@@ -10,12 +10,21 @@
       />
     </div>
 
-    <div v-for="alert in sortedAlerts" :key="alert.id" class="mb-3">
+    <!-- Filter chips -->
+    <div class="d-flex flex-wrap align-center gap-2 mb-4">
+      <v-chip-group v-model="selectedFilter" mandatory selected-class="text-primary">
+        <v-chip filter variant="tonal" value="all" size="small">All</v-chip>
+        <v-chip filter variant="tonal" color="error" value="critical" size="small">Critical</v-chip>
+        <v-chip filter variant="tonal" color="warning" value="warning" size="small">Warning</v-chip>
+        <v-chip filter variant="tonal" color="info" value="info" size="small">Info</v-chip>
+      </v-chip-group>
+    </div>
+
+    <div v-for="alert in filteredAlerts" :key="alert.id" class="mb-3">
       <v-sheet
         :color="alertBgColor(alert.type)"
         rounded="0"
         class="pa-3 alert-item"
-        :class="{ 'alert-acknowledged': alert.acknowledged }"
         :style="{ borderLeft: `3px solid rgb(var(--v-theme-${alertColorName(alert.type)}))` }"
       >
         <div class="d-flex align-center">
@@ -42,15 +51,15 @@
       </v-sheet>
     </div>
 
-    <div v-if="alerts.length === 0" class="text-center pa-8 text-medium-emphasis">
+    <div v-if="filteredAlerts.length === 0" class="text-center pa-8 text-medium-emphasis">
       <v-icon icon="mdi-bell-check-outline" size="40" class="mb-2" color="success" />
-      <div class="text-body-2">All clear — no alerts</div>
+      <div class="text-body-2">No unread alerts</div>
     </div>
   </component>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 
 interface Alert {
   id: string
@@ -72,19 +81,24 @@ defineEmits<{
   acknowledge: [id: string]
 }>()
 
+const selectedFilter = ref<string>('all')
+
 const unacknowledgedCount = computed(() =>
   props.alerts.filter((a) => !a.acknowledged).length
 )
 
-const sortedAlerts = computed(() =>
-  [...props.alerts].sort((a, b) => {
-    const priority: Record<string, number> = { critical: 0, warning: 1, info: 2 }
-    const pa = priority[a.type] ?? 3
-    const pb = priority[b.type] ?? 3
-    if (pa !== pb) return pa - pb
-    return new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
-  })
+const unreadAlerts = computed(() =>
+  props.alerts.filter((a) => !a.acknowledged)
 )
+
+const filteredAlerts = computed(() => {
+  const alerts = selectedFilter.value === 'all'
+    ? unreadAlerts.value
+    : unreadAlerts.value.filter((a) => a.type === selectedFilter.value)
+  return [...alerts].sort(
+    (a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+  )
+})
 
 function alertBgColor(type: string): string {
   if (type === 'critical') return 'error-container'
@@ -105,8 +119,18 @@ function alertIcon(type: string) {
 }
 
 function formatTime(timestamp: string) {
+  const now = new Date()
   const d = new Date(timestamp)
-  return d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
+  const diffMs = now.getTime() - d.getTime()
+  const diffMin = Math.floor(diffMs / 60_000)
+  const diffHr = Math.floor(diffMs / 3_600_000)
+
+  if (diffMin < 1) return 'Just now'
+  if (diffMin < 60) return `${diffMin} min ago`
+  if (diffHr < 24) return `${diffHr} hr ago`
+
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) +
+    ', ' + d.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })
 }
 </script>
 
@@ -117,10 +141,6 @@ function formatTime(timestamp: string) {
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: rgba(var(--v-theme-on-surface), 0.5);
-}
-.alert-acknowledged {
-  opacity: 0.4;
-  transform: scale(0.98);
 }
 .alert-item {
   transition: opacity 200ms cubic-bezier(0.2, 0, 0, 1),
