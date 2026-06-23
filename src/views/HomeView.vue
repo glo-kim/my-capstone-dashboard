@@ -544,4 +544,14 @@ function activityLabel(type: string) {
   letter-spacing: 0.06em;
   color: rgba(var(--v-theme-on-surface), 0.5);
 }
+:deep(.v-row) {
+  align-items: stretch;
+}
+:deep(.v-row > .v-col) {
+  display: flex;
+  flex-direction: column;
+}
+:deep(.v-row > .v-col > .v-card:last-child) {
+  flex: 1;
+}
 </style>
