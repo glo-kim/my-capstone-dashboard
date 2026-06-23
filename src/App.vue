@@ -2,7 +2,7 @@
   <v-app>
     <v-app-bar flat color="white" class="app-bar-md3" border="b">
       <template #prepend>
-        <div class="d-flex align-center ml-3">
+        <div class="d-flex align-center ml-6">
           <v-avatar color="primary" size="34" rounded="lg" class="mr-3">
             <v-icon icon="mdi-heart-pulse" size="20" color="on-primary" />
           </v-avatar>
@@ -20,7 +20,7 @@
         <v-btn icon="mdi-magnify" variant="text" size="small" class="mr-1" />
         <v-btn icon="mdi-bell-outline" variant="text" size="small" class="mr-1" />
         <v-divider vertical class="mx-2" length="24" />
-        <v-avatar color="primary-container" size="34" class="mr-3" rounded="lg">
+        <v-avatar color="primary-container" size="34" class="mr-6" rounded="lg">
           <span class="text-caption font-weight-bold" style="color: rgb(var(--v-theme-on-primary-container))">GK</span>
         </v-avatar>
       </template>
