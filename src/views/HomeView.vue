@@ -91,7 +91,7 @@
     <v-row>
       <v-col cols="12" md="4">
         <!-- Alerts (collapsible) -->
-        <v-card variant="flat" class="mb-4" style="background: rgb(var(--v-theme-surface-light)); border: 1px solid rgba(var(--v-theme-outline-variant), 0.5)">
+        <v-card variant="flat" class="mb-4" style="background: rgb(var(--v-theme-surface-light)); border: 1px solid rgba(var(--v-theme-outline-variant), 0.5); overflow: visible">
           <v-card-title
             class="d-flex align-center pa-4"
             style="cursor: pointer; min-height: 48px"
@@ -114,7 +114,10 @@
               <AlertsPanel
                 :alerts="alerts"
                 embedded
-                @acknowledge="acknowledgeAlert"
+                @archive="archiveAlert"
+                @pin="pinAlert"
+                @view-snapshot="viewCaseSnapshot"
+                @view-details="viewCaseDetails"
               />
             </div>
           </v-expand-transition>
@@ -451,9 +454,27 @@ function onCaseSelect(item: any) {
   }
 }
 
-function acknowledgeAlert(id: string) {
+function archiveAlert(id: string) {
   const alert = alerts.value.find((a) => a.id === id)
   if (alert) alert.acknowledged = true
+}
+
+function pinAlert(id: string) {
+  const alert = alerts.value.find((a) => a.id === id) as any
+  if (alert) alert.pinned = !alert.pinned
+}
+
+function viewCaseSnapshot(alert: any) {
+  const caseData = data.cases.find((c: any) => c.id === alert.caseId)
+  const patient = data.patients.find((p: any) => p.id === alert.patientId)
+  if (caseData && patient) {
+    selectedCase.value = { case: caseData, patient }
+    drawerOpen.value = true
+  }
+}
+
+function viewCaseDetails(alert: any) {
+  viewCaseSnapshot(alert)
 }
 
 function patientAlerts(patientId: string) {
