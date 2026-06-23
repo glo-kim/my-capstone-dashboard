@@ -73,11 +73,6 @@
                     @click="$emit('pin', alert.id)"
                   />
                   <v-list-item
-                    prepend-icon="mdi-card-account-details-outline"
-                    title="View Case Snapshot"
-                    @click="$emit('view-snapshot', alert)"
-                  />
-                  <v-list-item
                     prepend-icon="mdi-open-in-new"
                     title="View Case Details"
                     @click="$emit('view-details', alert)"
@@ -138,11 +133,6 @@
                     prepend-icon="mdi-pin-off-outline"
                     title="Unpin Alert"
                     @click="$emit('pin', alert.id)"
-                  />
-                  <v-list-item
-                    prepend-icon="mdi-card-account-details-outline"
-                    title="View Case Snapshot"
-                    @click="$emit('view-snapshot', alert)"
                   />
                   <v-list-item
                     prepend-icon="mdi-open-in-new"
