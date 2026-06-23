@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <v-app-bar flat color="surface" class="app-bar-md3" border="b">
+    <v-app-bar flat color="white" class="app-bar-md3" border="b">
       <template #prepend>
         <div class="d-flex align-center ml-3">
           <v-avatar color="primary" size="34" rounded="lg" class="mr-3">
