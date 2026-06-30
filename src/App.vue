@@ -27,6 +27,10 @@
           <span class="nav-rail-label">Calendar</span>
         </div>
         <div class="nav-rail-btn">
+          <v-icon icon="mdi-message-outline" size="22" />
+          <span class="nav-rail-label">Messages</span>
+        </div>
+        <div class="nav-rail-btn">
           <v-icon icon="mdi-chart-bar" size="22" />
           <span class="nav-rail-label">Reports</span>
         </div>
