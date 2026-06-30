@@ -1,7 +1,6 @@
 <template>
-  <v-layout style="min-height: 100vh">
-    <v-main>
-      <v-container fluid class="pa-5 pa-md-8">
+  <div>
+    <v-container fluid class="pa-5 pa-md-8">
     <!-- Header -->
     <div class="d-flex align-center justify-space-between mb-6">
       <div>
@@ -201,7 +200,6 @@
       </v-col>
     </v-row>
   </v-container>
-    </v-main>
 
     <!-- Case Detail Drawer -->
     <v-navigation-drawer
@@ -210,9 +208,9 @@
       width="400"
       temporary
       fixed
-      style="position: fixed; height: calc(100vh - 64px); top: 64px"
+      style="position: fixed; height: 100vh; top: 0"
     >
-      <div v-if="selectedCase" class="d-flex flex-column" style="height: calc(100vh - 64px)">
+      <div v-if="selectedCase" class="d-flex flex-column" style="height: 100vh">
         <!-- Sticky header -->
         <div class="pa-5 pb-0" style="flex-shrink: 0; position: sticky; top: 0; z-index: 1; background: rgb(var(--v-theme-surface))">
           <div class="d-flex align-center justify-space-between mb-1">
@@ -416,7 +414,7 @@
         </div>
       </div>
     </v-navigation-drawer>
-  </v-layout>
+  </div>
 </template>
 
 <script setup lang="ts">
