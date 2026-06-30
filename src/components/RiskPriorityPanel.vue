@@ -64,7 +64,7 @@
         <tr
           v-for="item in filteredCases"
           :key="item.case.id"
-          :class="{ 'overdue-row': item.case.followUpOverdue, 'selected-row': selectedCase?.case.id === item.case.id }"
+          :class="{ 'selected-row': selectedCase?.case.id === item.case.id }"
           style="cursor: pointer"
           @click="selectCase(item)"
         >
@@ -140,7 +140,7 @@
               </div>
               <div
                 class="text-caption"
-                :class="item.case.daysSinceLastContact >= 5 ? 'text-error' : item.case.daysSinceLastContact >= 3 ? 'text-warning' : 'text-medium-emphasis'"
+                :class="item.case.daysSinceLastContact >= 5 && !hasInfoAlert(item.patient.id) ? 'text-error' : item.case.daysSinceLastContact >= 3 && !hasInfoAlert(item.patient.id) ? 'text-warning' : 'text-medium-emphasis'"
               >
                 {{ item.case.daysSinceLastContact }}d since last contact
               </div>
@@ -258,6 +258,13 @@ function hasInfoAlert(patientId: string) {
   return props.alerts?.some(a => a.patientId === patientId && a.type === 'info') ?? false
 }
 
+function rowAlertClass(item: CaseWithPatient): string {
+  if (item.case.followUpOverdue) return 'overdue-row'
+  if (item.case.daysSinceLastContact >= 3 && !hasInfoAlert(item.patient.id)) return 'warning-row'
+  if (hasInfoAlert(item.patient.id)) return 'info-row'
+  return ''
+}
+
 function selectCase(item: CaseWithPatient) {
   selectedCase.value = selectedCase.value?.case.id === item.case.id ? null : item
   emit('select', selectedCase.value)
@@ -313,9 +320,6 @@ function formatDate(date: string) {
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: rgba(var(--v-theme-on-surface), 0.5);
-}
-.overdue-row {
-  background: rgba(var(--v-theme-error), 0.04) !important;
 }
 .selected-row {
   background: rgba(var(--v-theme-primary), 0.08) !important;
