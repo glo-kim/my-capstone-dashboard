@@ -1,0 +1,148 @@
+{
+  "messages": [
+    {
+      "id": "MSG-001",
+      "patientId": "PT-10234",
+      "patientName": "Margaret Chen",
+      "status": "active",
+      "unread": true,
+      "lastMessage": "Hi Gloria, I wanted to let you know my blood pressure was 148/92 this morning. Should I be concerned?",
+      "lastMessageTime": "2026-06-30T08:45:00",
+      "sender": "patient",
+      "messages": [
+        {
+          "id": "m1",
+          "sender": "patient",
+          "text": "Hi Gloria, I wanted to let you know my blood pressure was 148/92 this morning. Should I be concerned?",
+          "timestamp": "2026-06-30T08:45:00"
+        }
+      ]
+    },
+    {
+      "id": "MSG-002",
+      "patientId": "PT-10301",
+      "patientName": "James Okafor",
+      "status": "active",
+      "unread": true,
+      "lastMessage": "I'm having trouble picking up my new inhaler from the pharmacy. They said there's an insurance issue.",
+      "lastMessageTime": "2026-06-30T07:20:00",
+      "sender": "patient",
+      "messages": [
+        {
+          "id": "m1",
+          "sender": "coordinator",
+          "text": "Hi James, how are you feeling since your discharge last week?",
+          "timestamp": "2026-06-29T14:00:00"
+        },
+        {
+          "id": "m2",
+          "sender": "patient",
+          "text": "Doing okay, but I'm having trouble picking up my new inhaler from the pharmacy. They said there's an insurance issue.",
+          "timestamp": "2026-06-30T07:20:00"
+        }
+      ]
+    },
+    {
+      "id": "MSG-003",
+      "patientId": "PT-10455",
+      "patientName": "Robert Whitfield",
+      "status": "active",
+      "unread": false,
+      "lastMessage": "That's great to hear, Robert. Keep up with the cardiac rehab sessions and let me know if you need anything.",
+      "lastMessageTime": "2026-06-29T16:30:00",
+      "sender": "coordinator",
+      "messages": [
+        {
+          "id": "m1",
+          "sender": "patient",
+          "text": "Hi, I wanted to confirm my cardiac rehab appointment for Thursday.",
+          "timestamp": "2026-06-29T15:10:00"
+        },
+        {
+          "id": "m2",
+          "sender": "coordinator",
+          "text": "Hi Robert! Yes, your appointment is confirmed for Thursday at 10am at the Evergreen Rehab Center.",
+          "timestamp": "2026-06-29T15:45:00"
+        },
+        {
+          "id": "m3",
+          "sender": "patient",
+          "text": "Thank you! I've been feeling much better this week.",
+          "timestamp": "2026-06-29T16:00:00"
+        },
+        {
+          "id": "m4",
+          "sender": "coordinator",
+          "text": "That's great to hear, Robert. Keep up with the cardiac rehab sessions and let me know if you need anything.",
+          "timestamp": "2026-06-29T16:30:00"
+        }
+      ]
+    },
+    {
+      "id": "MSG-004",
+      "patientId": "PT-10322",
+      "patientName": "Yolanda Freeman",
+      "status": "active",
+      "unread": true,
+      "lastMessage": "Can we reschedule my follow-up? I have a conflict on Tuesday.",
+      "lastMessageTime": "2026-06-29T20:15:00",
+      "sender": "patient",
+      "messages": [
+        {
+          "id": "m1",
+          "sender": "patient",
+          "text": "Can we reschedule my follow-up? I have a conflict on Tuesday.",
+          "timestamp": "2026-06-29T20:15:00"
+        }
+      ]
+    },
+    {
+      "id": "MSG-005",
+      "patientId": "PT-10189",
+      "patientName": "Dorothy Alvarez",
+      "status": "archived",
+      "unread": false,
+      "lastMessage": "Thank you for everything, Gloria. I'm feeling much more confident with the exercises now.",
+      "lastMessageTime": "2026-06-25T11:00:00",
+      "sender": "patient",
+      "messages": [
+        {
+          "id": "m1",
+          "sender": "coordinator",
+          "text": "Hi Dorothy, just checking in on your physical therapy progress. How are the exercises going?",
+          "timestamp": "2026-06-25T09:00:00"
+        },
+        {
+          "id": "m2",
+          "sender": "patient",
+          "text": "Thank you for everything, Gloria. I'm feeling much more confident with the exercises now.",
+          "timestamp": "2026-06-25T11:00:00"
+        }
+      ]
+    },
+    {
+      "id": "MSG-006",
+      "patientId": "PT-10234",
+      "patientName": "Margaret Chen",
+      "status": "archived",
+      "unread": false,
+      "lastMessage": "Your medication adjustment has been approved. The pharmacy will have it ready tomorrow.",
+      "lastMessageTime": "2026-06-20T14:30:00",
+      "sender": "coordinator",
+      "messages": [
+        {
+          "id": "m1",
+          "sender": "patient",
+          "text": "Gloria, I'm running low on my Lisinopril. Can you help with a refill?",
+          "timestamp": "2026-06-20T10:00:00"
+        },
+        {
+          "id": "m2",
+          "sender": "coordinator",
+          "text": "Your medication adjustment has been approved. The pharmacy will have it ready tomorrow.",
+          "timestamp": "2026-06-20T14:30:00"
+        }
+      ]
+    }
+  ]
+}

@@ -6,6 +6,11 @@ const routes = [
     name: 'Home',
     component: () => import('../views/HomeView.vue'),
   },
+  {
+    path: '/messages',
+    name: 'Messages',
+    component: () => import('../views/MessagesView.vue'),
+  },
 ]
 
 const router = createRouter({

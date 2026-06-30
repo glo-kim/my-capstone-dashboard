@@ -26,10 +26,12 @@
           <v-icon icon="mdi-calendar-clock-outline" size="22" />
           <span class="nav-rail-label">Calendar</span>
         </div>
-        <div class="nav-rail-btn">
-          <v-icon icon="mdi-message-outline" size="22" />
-          <span class="nav-rail-label">Messages</span>
-        </div>
+        <router-link to="/messages" class="nav-rail-btn" active-class="nav-rail-btn--active">
+          <v-badge :content="unreadMessageCount" :model-value="unreadMessageCount > 0" color="error" offset-x="-2" offset-y="2">
+            <v-icon :icon="route.path === '/messages' ? 'mdi-message' : 'mdi-message-outline'" size="22" />
+          </v-badge>
+          <span class="nav-rail-label" :class="{ 'nav-rail-label--active': route.path === '/messages' }">Messages</span>
+        </router-link>
         <div class="nav-rail-btn">
           <v-icon icon="mdi-chart-bar" size="22" />
           <span class="nav-rail-label">Reports</span>
@@ -65,8 +67,10 @@
 
 <script setup lang="ts">
 import { useRoute } from 'vue-router'
+import { useMessages } from './composables/useMessages'
 
 const route = useRoute()
+const { unreadCount: unreadMessageCount } = useMessages()
 </script>
 
 <style scoped>
