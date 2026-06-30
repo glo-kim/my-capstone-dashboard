@@ -420,6 +420,8 @@
 <script setup lang="ts">
 import { ref, computed, watch } from 'vue'
 import metricsData from '../data/metrics.json'
+import calendarData from '../data/calendar.json'
+import messagesData from '../data/messages.json'
 
 import KpiCard from '../components/KpiCard.vue'
 import CaseloadPanel from '../components/CaseloadPanel.vue'
@@ -508,10 +510,46 @@ function riskColor(level: string) {
 }
 
 function caseActivities(caseId: string) {
-  return data.activities
+  const caseData = data.cases.find((c: any) => c.id === caseId)
+  const patientId = caseData?.patientId || ''
+
+  // Standard activities
+  const standard = data.activities
     .filter((a: any) => a.caseId === caseId)
+    .map((a: any) => ({ ...a }))
+
+  // Calendar appointments for this patient (past only)
+  const today = new Date().toISOString().split('T')[0]
+  const calendarActivities = calendarData.appointments
+    .filter((apt: any) => apt.patientId === patientId && apt.date <= today)
+    .map((apt: any) => ({
+      id: apt.id,
+      caseId,
+      patientId: apt.patientId,
+      type: 'calendar',
+      date: apt.date,
+      duration: 0,
+      outcome: `${apt.title} — ${apt.startTime}-${apt.endTime} at ${apt.location}`,
+      completedBy: 'CC-4821'
+    }))
+
+  // Messages for this patient
+  const messageActivities = messagesData.messages
+    .filter((msg: any) => msg.patientId === patientId)
+    .map((msg: any) => ({
+      id: msg.id,
+      caseId,
+      patientId: msg.patientId,
+      type: 'message',
+      date: msg.lastMessageTime.split('T')[0],
+      duration: 0,
+      outcome: msg.lastMessage,
+      completedBy: 'CC-4821'
+    }))
+
+  return [...standard, ...calendarActivities, ...messageActivities]
     .sort((a: any, b: any) => b.date.localeCompare(a.date))
-    .slice(0, 4)
+    .slice(0, 6)
 }
 
 function activityIcon(type: string) {
@@ -520,6 +558,8 @@ function activityIcon(type: string) {
     'home-visit': 'mdi-home-account',
     'coordination': 'mdi-swap-horizontal',
     'documentation': 'mdi-file-document-outline',
+    'calendar': 'mdi-calendar-clock-outline',
+    'message': 'mdi-message-outline',
   }
   return map[type] || 'mdi-circle-small'
 }
@@ -530,6 +570,8 @@ function activityLabel(type: string) {
     'home-visit': 'Home Visit',
     'coordination': 'Coordination',
     'documentation': 'Documentation',
+    'calendar': 'Appointment',
+    'message': 'Message',
   }
   return map[type] || type
 }
