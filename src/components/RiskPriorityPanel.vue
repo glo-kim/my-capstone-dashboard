@@ -7,16 +7,57 @@
 
     <v-tabs-window v-model="activeTab">
       <v-tabs-window-item value="patients">
-    <div class="d-flex flex-wrap align-center gap-2 mb-4">
-      <v-chip-group v-model="statusFilter" multiple selected-class="text-primary">
-        <v-chip filter variant="tonal" value="open" size="small">Open {{ countByStatus('open') }}</v-chip>
-        <v-chip filter variant="tonal" value="in-progress" size="small">In Progress {{ countByStatus('in-progress') }}</v-chip>
-      </v-chip-group>
-      <v-chip-group v-model="riskFilter" multiple selected-class="text-primary" class="ml-1">
-        <v-chip filter variant="tonal" color="error" value="high" size="small">High Risk {{ countByRisk('high') }}</v-chip>
-        <v-chip filter variant="tonal" color="warning" value="medium" size="small">Medium {{ countByRisk('medium') }}</v-chip>
-        <v-chip filter variant="tonal" color="success" value="low" size="small">Low {{ countByRisk('low') }}</v-chip>
-      </v-chip-group>
+    <div class="d-flex flex-wrap align-center gap-3 mb-4">
+      <v-menu :close-on-content-click="false">
+        <template #activator="{ props }">
+          <v-chip v-bind="props" variant="tonal" size="small" append-icon="mdi-chevron-down" :color="statusFilter.length ? 'primary' : undefined" class="mr-2">
+            Status{{ statusFilter.length ? ` (${statusFilter.length})` : '' }}
+          </v-chip>
+        </template>
+        <v-list density="compact" min-width="180">
+          <v-list-item @click="toggleStatusFilter('open')">
+            <template #prepend>
+              <v-checkbox-btn :model-value="statusFilter.includes('open')" density="compact" />
+            </template>
+            <v-list-item-title class="text-body-2">Open {{ countByStatus('open') }}</v-list-item-title>
+          </v-list-item>
+          <v-list-item @click="toggleStatusFilter('in-progress')">
+            <template #prepend>
+              <v-checkbox-btn :model-value="statusFilter.includes('in-progress')" density="compact" />
+            </template>
+            <v-list-item-title class="text-body-2">In Progress {{ countByStatus('in-progress') }}</v-list-item-title>
+          </v-list-item>
+        </v-list>
+      </v-menu>
+
+      <v-menu :close-on-content-click="false">
+        <template #activator="{ props }">
+          <v-chip v-bind="props" variant="tonal" size="small" append-icon="mdi-chevron-down" :color="riskFilter.length ? 'primary' : undefined" class="mr-2">
+            Risk{{ riskFilter.length ? ` (${riskFilter.length})` : '' }}
+          </v-chip>
+        </template>
+        <v-list density="compact" min-width="180">
+          <v-list-item @click="toggleRiskFilter('high')">
+            <template #prepend>
+              <v-checkbox-btn :model-value="riskFilter.includes('high')" density="compact" color="error" />
+            </template>
+            <v-list-item-title class="text-body-2">High Risk {{ countByRisk('high') }}</v-list-item-title>
+          </v-list-item>
+          <v-list-item @click="toggleRiskFilter('medium')">
+            <template #prepend>
+              <v-checkbox-btn :model-value="riskFilter.includes('medium')" density="compact" color="warning" />
+            </template>
+            <v-list-item-title class="text-body-2">Medium {{ countByRisk('medium') }}</v-list-item-title>
+          </v-list-item>
+          <v-list-item @click="toggleRiskFilter('low')">
+            <template #prepend>
+              <v-checkbox-btn :model-value="riskFilter.includes('low')" density="compact" color="success" />
+            </template>
+            <v-list-item-title class="text-body-2">Low {{ countByRisk('low') }}</v-list-item-title>
+          </v-list-item>
+        </v-list>
+      </v-menu>
+
       <v-chip
         filter
         variant="tonal"
@@ -28,6 +69,15 @@
         Alerts {{ countAlerts() }}
       </v-chip>
       <v-spacer />
+      <v-btn
+        variant="text"
+        size="small"
+        prepend-icon="mdi-refresh"
+        @click="resetFilters"
+        class="mr-2"
+      >
+        Reset
+      </v-btn>
       <v-text-field
         v-model="search"
         density="compact"
@@ -38,15 +88,8 @@
         style="max-width: 240px"
         variant="outlined"
         rounded="pill"
+        class="ml-2"
       />
-      <v-btn
-        variant="text"
-        size="small"
-        prepend-icon="mdi-refresh"
-        @click="resetFilters"
-      >
-        Reset
-      </v-btn>
     </div>
 
     <v-table density="comfortable" hover class="risk-table">
@@ -233,6 +276,24 @@ const statusFilter = ref<string[]>([])
 const riskFilter = ref<string[]>([])
 const selectedCase = ref<CaseWithPatient | null>(null)
 const alertFilter = ref(false)
+
+function toggleStatusFilter(value: string) {
+  const idx = statusFilter.value.indexOf(value)
+  if (idx === -1) {
+    statusFilter.value = [...statusFilter.value, value]
+  } else {
+    statusFilter.value = statusFilter.value.filter(v => v !== value)
+  }
+}
+
+function toggleRiskFilter(value: string) {
+  const idx = riskFilter.value.indexOf(value)
+  if (idx === -1) {
+    riskFilter.value = [...riskFilter.value, value]
+  } else {
+    riskFilter.value = riskFilter.value.filter(v => v !== value)
+  }
+}
 
 function resetFilters() {
   search.value = ''
