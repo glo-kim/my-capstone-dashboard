@@ -18,10 +18,6 @@
           <v-icon icon="mdi-folder-account-outline" size="22" />
           <span class="nav-rail-label">My Cases</span>
         </div>
-        <div class="nav-rail-btn">
-          <v-icon icon="mdi-checkbox-marked-outline" size="22" />
-          <span class="nav-rail-label">My Tasks</span>
-        </div>
         <router-link to="/calendar" class="nav-rail-btn" active-class="nav-rail-btn--active">
           <v-icon :icon="route.path === '/calendar' ? 'mdi-calendar-clock' : 'mdi-calendar-clock-outline'" size="22" />
           <span class="nav-rail-label" :class="{ 'nav-rail-label--active': route.path === '/calendar' }">Calendar</span>
@@ -35,10 +31,6 @@
         <div class="nav-rail-btn">
           <v-icon icon="mdi-chart-bar" size="22" />
           <span class="nav-rail-label">Reports</span>
-        </div>
-        <div class="nav-rail-btn">
-          <v-icon icon="mdi-toolbox-outline" size="22" />
-          <span class="nav-rail-label">Tools</span>
         </div>
       </div>
 
