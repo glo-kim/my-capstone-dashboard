@@ -22,10 +22,10 @@
           <v-icon icon="mdi-checkbox-marked-outline" size="22" />
           <span class="nav-rail-label">My Tasks</span>
         </div>
-        <div class="nav-rail-btn">
-          <v-icon icon="mdi-calendar-clock-outline" size="22" />
-          <span class="nav-rail-label">Calendar</span>
-        </div>
+        <router-link to="/calendar" class="nav-rail-btn" active-class="nav-rail-btn--active">
+          <v-icon :icon="route.path === '/calendar' ? 'mdi-calendar-clock' : 'mdi-calendar-clock-outline'" size="22" />
+          <span class="nav-rail-label" :class="{ 'nav-rail-label--active': route.path === '/calendar' }">Calendar</span>
+        </router-link>
         <router-link to="/messages" class="nav-rail-btn" active-class="nav-rail-btn--active">
           <v-badge :content="unreadMessageCount" :model-value="unreadMessageCount > 0" color="error" offset-x="-2" offset-y="2">
             <v-icon :icon="route.path === '/messages' ? 'mdi-message' : 'mdi-message-outline'" size="22" />

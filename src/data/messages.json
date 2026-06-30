@@ -143,6 +143,198 @@
           "timestamp": "2026-06-20T14:30:00"
         }
       ]
+    },
+    {
+      "id": "MSG-007",
+      "patientId": "PT-10301",
+      "patientName": "James Okafor",
+      "status": "archived",
+      "unread": false,
+      "lastMessage": "Sounds good. I'll bring the oxygen log to the appointment.",
+      "lastMessageTime": "2026-06-15T10:45:00",
+      "sender": "patient",
+      "messages": [
+        {
+          "id": "m1",
+          "sender": "coordinator",
+          "text": "Hi James, just a reminder about your follow-up appointment tomorrow at 10am. Please bring your oxygen usage log.",
+          "timestamp": "2026-06-15T09:00:00"
+        },
+        {
+          "id": "m2",
+          "sender": "patient",
+          "text": "Sounds good. I'll bring the oxygen log to the appointment.",
+          "timestamp": "2026-06-15T10:45:00"
+        }
+      ]
+    },
+    {
+      "id": "MSG-008",
+      "patientId": "PT-10455",
+      "patientName": "Robert Whitfield",
+      "status": "archived",
+      "unread": false,
+      "lastMessage": "Great work, Robert! Keep it up. I'll check in again after your Thursday session.",
+      "lastMessageTime": "2026-06-18T15:00:00",
+      "sender": "coordinator",
+      "messages": [
+        {
+          "id": "m1",
+          "sender": "patient",
+          "text": "Hi Gloria, I completed my first cardiac rehab session yesterday. It went well!",
+          "timestamp": "2026-06-18T08:30:00"
+        },
+        {
+          "id": "m2",
+          "sender": "coordinator",
+          "text": "That's wonderful news! How was your heart rate during the exercises?",
+          "timestamp": "2026-06-18T10:00:00"
+        },
+        {
+          "id": "m3",
+          "sender": "patient",
+          "text": "They said it stayed in the target zone. I was a bit tired after but felt good overall.",
+          "timestamp": "2026-06-18T12:15:00"
+        },
+        {
+          "id": "m4",
+          "sender": "coordinator",
+          "text": "Great work, Robert! Keep it up. I'll check in again after your Thursday session.",
+          "timestamp": "2026-06-18T15:00:00"
+        }
+      ]
+    },
+    {
+      "id": "MSG-009",
+      "patientId": "PT-10189",
+      "patientName": "Dorothy Alvarez",
+      "status": "archived",
+      "unread": false,
+      "lastMessage": "I've arranged for a grab bar installation this Friday. The contractor will call you to confirm a time.",
+      "lastMessageTime": "2026-06-10T11:30:00",
+      "sender": "coordinator",
+      "messages": [
+        {
+          "id": "m1",
+          "sender": "patient",
+          "text": "Gloria, I almost slipped in the bathroom yesterday. Is there something we can do about safety?",
+          "timestamp": "2026-06-10T08:00:00"
+        },
+        {
+          "id": "m2",
+          "sender": "coordinator",
+          "text": "I'm so sorry to hear that, Dorothy. Are you okay? I'll look into getting grab bars installed right away.",
+          "timestamp": "2026-06-10T09:15:00"
+        },
+        {
+          "id": "m3",
+          "sender": "patient",
+          "text": "I'm fine, just shaken up. That would be wonderful, thank you.",
+          "timestamp": "2026-06-10T09:45:00"
+        },
+        {
+          "id": "m4",
+          "sender": "coordinator",
+          "text": "I've arranged for a grab bar installation this Friday. The contractor will call you to confirm a time.",
+          "timestamp": "2026-06-10T11:30:00"
+        }
+      ]
+    },
+    {
+      "id": "MSG-010",
+      "patientId": "PT-10234",
+      "patientName": "Margaret Chen",
+      "status": "archived",
+      "unread": false,
+      "lastMessage": "Welcome home, Margaret! Remember to weigh yourself every morning and call if you gain more than 2 lbs in a day.",
+      "lastMessageTime": "2026-06-04T16:00:00",
+      "sender": "coordinator",
+      "messages": [
+        {
+          "id": "m1",
+          "sender": "coordinator",
+          "text": "Hi Margaret, I wanted to let you know your discharge is confirmed for today. Your daughter will be picking you up at 2pm.",
+          "timestamp": "2026-06-04T10:00:00"
+        },
+        {
+          "id": "m2",
+          "sender": "patient",
+          "text": "Thank you so much for everything, Gloria. I feel much better.",
+          "timestamp": "2026-06-04T11:30:00"
+        },
+        {
+          "id": "m3",
+          "sender": "coordinator",
+          "text": "Welcome home, Margaret! Remember to weigh yourself every morning and call if you gain more than 2 lbs in a day.",
+          "timestamp": "2026-06-04T16:00:00"
+        }
+      ]
+    },
+    {
+      "id": "MSG-011",
+      "patientId": "PT-10322",
+      "patientName": "Yolanda Freeman",
+      "status": "archived",
+      "unread": false,
+      "lastMessage": "Perfect. I've sent the referral to the pulmonologist. They should call you within 48 hours to schedule.",
+      "lastMessageTime": "2026-05-28T14:00:00",
+      "sender": "coordinator",
+      "messages": [
+        {
+          "id": "m1",
+          "sender": "patient",
+          "text": "Hi Gloria, my doctor mentioned I should see a lung specialist. Can you help set that up?",
+          "timestamp": "2026-05-28T09:30:00"
+        },
+        {
+          "id": "m2",
+          "sender": "coordinator",
+          "text": "Of course! I'll send a referral to Dr. Park at the Evergreen Pulmonology Clinic. Any day preferences?",
+          "timestamp": "2026-05-28T10:15:00"
+        },
+        {
+          "id": "m3",
+          "sender": "patient",
+          "text": "Tuesdays or Thursdays work best for me.",
+          "timestamp": "2026-05-28T11:00:00"
+        },
+        {
+          "id": "m4",
+          "sender": "coordinator",
+          "text": "Perfect. I've sent the referral to the pulmonologist. They should call you within 48 hours to schedule.",
+          "timestamp": "2026-05-28T14:00:00"
+        }
+      ]
+    },
+    {
+      "id": "MSG-012",
+      "patientId": "PT-10301",
+      "patientName": "James Okafor",
+      "status": "archived",
+      "unread": false,
+      "lastMessage": "The oxygen equipment has been delivered. The technician confirmed setup is complete. Call the number on the unit if you have questions.",
+      "lastMessageTime": "2026-06-08T13:00:00",
+      "sender": "coordinator",
+      "messages": [
+        {
+          "id": "m1",
+          "sender": "patient",
+          "text": "Gloria, when is the home oxygen being delivered? I was told it would be this week.",
+          "timestamp": "2026-06-08T08:00:00"
+        },
+        {
+          "id": "m2",
+          "sender": "coordinator",
+          "text": "Let me check with the DME company. I'll get back to you shortly.",
+          "timestamp": "2026-06-08T09:30:00"
+        },
+        {
+          "id": "m3",
+          "sender": "coordinator",
+          "text": "The oxygen equipment has been delivered. The technician confirmed setup is complete. Call the number on the unit if you have questions.",
+          "timestamp": "2026-06-08T13:00:00"
+        }
+      ]
     }
   ]
 }
