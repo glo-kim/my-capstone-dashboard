@@ -12,25 +12,29 @@
     </div>
 
     <!-- Toolbar -->
-    <v-card variant="flat" style="background: rgb(var(--v-theme-surface-light)); border: 1px solid rgba(var(--v-theme-outline-variant), 0.5)" class="mb-4">
-      <div class="d-flex align-center pa-3">
-        <v-btn icon="mdi-chevron-left" variant="text" size="small" @click="navigatePrev" />
-        <v-btn icon="mdi-chevron-right" variant="text" size="small" @click="navigateNext" />
-        <v-btn variant="tonal" size="small" class="ml-2" @click="goToToday">Today</v-btn>
-        <div class="text-body-1 font-weight-medium ml-4">{{ currentTitle }}</div>
-        <v-spacer />
-        <v-btn-toggle v-model="currentView" mandatory density="compact" variant="outlined" divided>
-          <v-btn value="day" size="small">Day</v-btn>
-          <v-btn value="week" size="small">Week</v-btn>
-          <v-btn value="month" size="small">Month</v-btn>
-        </v-btn-toggle>
-      </div>
-    </v-card>
+    <div class="d-flex align-center mb-4">
+      <v-btn icon="mdi-chevron-left" variant="text" size="small" @click="navigatePrev" />
+      <v-btn icon="mdi-chevron-right" variant="text" size="small" @click="navigateNext" />
+      <v-btn variant="tonal" size="small" class="ml-2" @click="goToToday">Today</v-btn>
+      <div class="text-body-1 font-weight-medium ml-4">{{ currentTitle }}</div>
+      <v-spacer />
+      <v-btn-toggle v-model="currentView" mandatory density="compact" variant="outlined" divided>
+        <v-btn value="day" size="small">Day</v-btn>
+        <v-btn value="week" size="small">Week</v-btn>
+        <v-btn value="month" size="small">Month</v-btn>
+      </v-btn-toggle>
+    </div>
 
     <!-- Calendar Content -->
     <v-card variant="flat" style="background: rgb(var(--v-theme-surface-light)); border: 1px solid rgba(var(--v-theme-outline-variant), 0.5)">
       <!-- Day View -->
       <div v-if="currentView === 'day'" class="pa-4">
+        <div v-if="isToday(currentDate)" class="d-flex align-center mb-3">
+          <v-avatar color="primary" size="28" class="mr-2">
+            <span class="text-caption font-weight-bold text-white">{{ new Date(currentDate + 'T12:00:00').getDate() }}</span>
+          </v-avatar>
+          <span class="text-body-2 font-weight-medium text-primary">Today</span>
+        </div>
         <div class="day-schedule">
           <div v-for="hour in dayHours" :key="hour" class="hour-row d-flex">
             <div class="hour-label text-caption text-medium-emphasis" style="width: 60px; flex-shrink: 0;">
@@ -41,7 +45,7 @@
                 v-for="apt in getAppointmentsForHour(currentDate, hour)"
                 :key="apt.id"
                 class="appointment-block pa-2 rounded-lg mb-1 cursor-pointer"
-                :style="{ backgroundColor: getColor(apt.color) }"
+                :style="{ backgroundColor: getColor(apt.type) }"
                 @click="viewAppointment(apt)"
               >
                 <div class="text-caption font-weight-bold text-white">{{ apt.title }}</div>
@@ -61,8 +65,13 @@
           <div class="week-header">
             <div class="time-gutter"></div>
             <div v-for="day in weekDays" :key="day.date" class="day-column-header text-center">
-              <div class="text-caption text-medium-emphasis">{{ day.label }}</div>
-              <div class="text-body-2 font-weight-medium" :class="{ 'text-primary': isToday(day.date) }">
+              <div class="text-caption" :class="isToday(day.date) ? 'text-primary font-weight-medium' : 'text-medium-emphasis'">{{ day.label }}</div>
+              <div v-if="isToday(day.date)" class="d-flex justify-center">
+                <v-avatar color="primary" size="30">
+                  <span class="text-caption font-weight-bold text-white">{{ day.dayNum }}</span>
+                </v-avatar>
+              </div>
+              <div v-else class="text-body-2 font-weight-medium">
                 {{ day.dayNum }}
               </div>
             </div>
@@ -72,12 +81,12 @@
             <div class="time-gutter text-caption text-medium-emphasis" style="padding-top: 2px;">
               {{ formatHour(hour) }}
             </div>
-            <div v-for="day in weekDays" :key="day.date" class="day-cell">
+            <div v-for="day in weekDays" :key="day.date" class="day-cell" :class="{ 'day-cell-today': isToday(day.date) }">
               <div
                 v-for="apt in getAppointmentsForHour(day.date, hour)"
                 :key="apt.id"
                 class="appointment-chip pa-1 px-2 rounded mb-1 cursor-pointer"
-                :style="{ backgroundColor: getColor(apt.color) }"
+                :style="{ backgroundColor: getColor(apt.type) }"
                 @click="viewAppointment(apt)"
               >
                 <div class="text-caption text-white font-weight-medium" style="font-size: 0.65rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
@@ -106,7 +115,7 @@
               class="month-day-cell"
               :class="{ 'month-day-today': isToday(day.date) }"
             >
-              <div class="month-day-number text-caption" :class="day.currentMonth ? '' : 'text-disabled'">
+              <div class="month-day-number text-caption" :class="[day.currentMonth ? '' : 'text-disabled', isToday(day.date) ? 'text-primary font-weight-bold' : '']">
                 {{ day.dayNum }}
               </div>
               <div class="month-day-events">
@@ -114,7 +123,7 @@
                   v-for="apt in getAppointmentsForDate(day.date).slice(0, 3)"
                   :key="apt.id"
                   class="month-event rounded cursor-pointer"
-                  :style="{ backgroundColor: getColor(apt.color) }"
+                  :style="{ backgroundColor: getColor(apt.type) }"
                   @click="viewAppointment(apt)"
                 >
                   <span class="month-event-text">{{ apt.startTime }} {{ apt.patientName || apt.title }}</span>
@@ -233,7 +242,7 @@
           </div>
           <div class="d-flex align-center mb-3">
             <v-icon icon="mdi-tag-outline" size="18" class="mr-2 text-medium-emphasis" />
-            <v-chip size="x-small" :color="selectedAppointment.color" variant="tonal">{{ selectedAppointment.type }}</v-chip>
+            <v-chip size="x-small" :style="{ backgroundColor: getColor(selectedAppointment.type), color: 'white' }">{{ selectedAppointment.type }}</v-chip>
           </div>
           <div v-if="selectedAppointment.notes" class="mt-3">
             <div class="text-caption text-medium-emphasis mb-1">Notes</div>
@@ -243,6 +252,90 @@
         <v-card-actions class="pa-4 pt-0">
           <v-spacer />
           <v-btn variant="text" @click="showViewDialog = false">Close</v-btn>
+          <v-btn variant="flat" color="primary" v-if="isEditable(selectedAppointment)" @click="openEditDialog">Edit</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
+    <!-- Edit Appointment Dialog -->
+    <v-dialog v-model="showEditDialog" max-width="500">
+      <v-card variant="flat" style="background: rgb(var(--v-theme-surface-light)); border: 1px solid rgba(var(--v-theme-outline-variant), 0.5)">
+        <v-card-title class="pa-4 border-b font-weight-bold text-body-1">Edit Appointment</v-card-title>
+        <v-card-text class="pa-4">
+          <v-text-field
+            v-model="editAppointment.title"
+            label="Title"
+            variant="outlined"
+            density="comfortable"
+            class="mb-3"
+          />
+          <v-select
+            v-model="editAppointment.patientId"
+            :items="patientOptions"
+            item-title="name"
+            item-value="id"
+            label="Associate with Patient/Case"
+            variant="outlined"
+            density="comfortable"
+            clearable
+            class="mb-3"
+          />
+          <v-select
+            v-model="editAppointment.type"
+            :items="appointmentTypes"
+            label="Appointment Type"
+            variant="outlined"
+            density="comfortable"
+            class="mb-3"
+          />
+          <v-row class="mb-3">
+            <v-col cols="6">
+              <v-text-field
+                v-model="editAppointment.date"
+                label="Date"
+                type="date"
+                variant="outlined"
+                density="comfortable"
+              />
+            </v-col>
+            <v-col cols="3">
+              <v-text-field
+                v-model="editAppointment.startTime"
+                label="Start"
+                type="time"
+                variant="outlined"
+                density="comfortable"
+              />
+            </v-col>
+            <v-col cols="3">
+              <v-text-field
+                v-model="editAppointment.endTime"
+                label="End"
+                type="time"
+                variant="outlined"
+                density="comfortable"
+              />
+            </v-col>
+          </v-row>
+          <v-text-field
+            v-model="editAppointment.location"
+            label="Location"
+            variant="outlined"
+            density="comfortable"
+            class="mb-3"
+          />
+          <v-textarea
+            v-model="editAppointment.notes"
+            label="Notes"
+            variant="outlined"
+            density="comfortable"
+            rows="2"
+          />
+        </v-card-text>
+        <v-card-actions class="pa-4 pt-0">
+          <v-spacer />
+          <v-btn variant="text" @click="showEditDialog = false">Cancel</v-btn>
+          <v-btn variant="flat" color="primary" @click="saveEditedAppointment">Save</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -273,8 +366,20 @@ const currentView = ref(calendarData.preferences.defaultView)
 const currentDate = ref(new Date().toISOString().split('T')[0])
 const showNewDialog = ref(false)
 const showViewDialog = ref(false)
+const showEditDialog = ref(false)
 const selectedAppointment = ref<Appointment | null>(null)
 const appointments = ref<Appointment[]>(calendarData.appointments)
+
+const editAppointment = ref({
+  title: '',
+  patientId: null as string | null,
+  type: 'follow-up',
+  date: '',
+  startTime: '',
+  endTime: '',
+  location: '',
+  notes: ''
+})
 
 const dayHours = Array.from({ length: 12 }, (_, i) => i + 7) // 7am - 6pm
 
@@ -375,16 +480,16 @@ function formatHour(hour: number): string {
   return `${h} ${ampm}`
 }
 
-function getColor(color: string): string {
-  const colors: Record<string, string> = {
-    'primary': 'rgb(var(--v-theme-primary))',
-    'teal': '#009688',
-    'deep-purple': '#673AB7',
-    'blue-grey': '#607D8B',
-    'orange': '#F57C00',
-    'amber': '#FFA000'
+function getColor(type: string): string {
+  const typeColors: Record<string, string> = {
+    'follow-up': 'rgb(var(--v-theme-primary))',
+    'care-plan-review': '#009688',
+    'discharge-planning': '#673AB7',
+    'home-visit': '#F57C00',
+    'administrative': '#FFA000',
+    'internal': '#607D8B'
   }
-  return colors[color] || 'rgb(var(--v-theme-primary))'
+  return typeColors[type] || 'rgb(var(--v-theme-primary))'
 }
 
 function getAppointmentsForDate(dateStr: string): Appointment[] {
@@ -457,6 +562,50 @@ function viewAppointment(apt: Appointment) {
   selectedAppointment.value = apt
   showViewDialog.value = true
 }
+
+function isEditable(apt: Appointment): boolean {
+  const today = new Date().toISOString().split('T')[0]
+  return apt.date >= today
+}
+
+function openEditDialog() {
+  if (!selectedAppointment.value) return
+  const apt = selectedAppointment.value
+  editAppointment.value = {
+    title: apt.title,
+    patientId: apt.patientId,
+    type: apt.type,
+    date: apt.date,
+    startTime: apt.startTime,
+    endTime: apt.endTime,
+    location: apt.location,
+    notes: apt.notes
+  }
+  showViewDialog.value = false
+  showEditDialog.value = true
+}
+
+function saveEditedAppointment() {
+  if (!selectedAppointment.value) return
+  const idx = appointments.value.findIndex(a => a.id === selectedAppointment.value!.id)
+  if (idx === -1) return
+
+  const patient = patientOptions.find(p => p.id === editAppointment.value.patientId)
+  appointments.value[idx] = {
+    ...appointments.value[idx],
+    title: editAppointment.value.title,
+    patientId: editAppointment.value.patientId,
+    patientName: patient?.name || null,
+    caseId: editAppointment.value.patientId ? `CASE-${editAppointment.value.patientId.replace('PT-', '')}` : null,
+    type: editAppointment.value.type,
+    date: editAppointment.value.date,
+    startTime: editAppointment.value.startTime,
+    endTime: editAppointment.value.endTime,
+    location: editAppointment.value.location,
+    notes: editAppointment.value.notes
+  }
+  showEditDialog.value = false
+}
 </script>
 
 <style scoped>
@@ -502,6 +651,10 @@ function viewAppointment(apt: Appointment) {
   border-left: 1px solid rgba(0, 0, 0, 0.06);
   padding: 2px 4px;
   min-height: 56px;
+}
+
+.day-cell-today {
+  background-color: rgba(var(--v-theme-primary), 0.04);
 }
 
 /* Month view grid layout */
