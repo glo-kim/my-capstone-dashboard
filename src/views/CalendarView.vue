@@ -222,9 +222,9 @@
     </v-dialog>
 
     <!-- View Appointment Dialog -->
-    <v-dialog v-model="showViewDialog" max-width="400">
+    <v-dialog v-model="showViewDialog" max-width="500">
       <v-card variant="flat" style="background: rgb(var(--v-theme-surface-light)); border: 1px solid rgba(var(--v-theme-outline-variant), 0.5)" v-if="selectedAppointment">
-        <v-card-title class="pa-4 border-b">
+        <v-card-title class="pa-4 border-b" style="white-space: normal; word-break: break-word;">
           <div class="text-body-1 font-weight-bold">{{ selectedAppointment.title }}</div>
         </v-card-title>
         <v-card-text class="pa-4">

@@ -245,6 +245,11 @@
                 <v-btn v-bind="props" size="small" variant="tonal" icon="mdi-clipboard-edit" />
               </template>
             </v-tooltip>
+            <v-tooltip text="Create Appointment" location="bottom">
+              <template v-slot:activator="{ props }">
+                <v-btn v-bind="props" size="small" variant="tonal" color="primary" icon="mdi-calendar-plus" class="ml-2" @click="openCreateAppointment" />
+              </template>
+            </v-tooltip>
           </div>
 
           <v-tabs v-model="drawerTab" density="compact" color="primary">
@@ -414,6 +419,78 @@
         </div>
       </div>
     </v-navigation-drawer>
+
+    <!-- Create Appointment Dialog -->
+    <v-dialog v-model="showAppointmentDialog" max-width="500">
+      <v-card variant="flat" style="background: rgb(var(--v-theme-surface-light)); border: 1px solid rgba(var(--v-theme-outline-variant), 0.5)">
+        <v-card-title class="pa-4 border-b font-weight-bold text-body-1">New Appointment</v-card-title>
+        <v-card-text class="pa-4">
+          <v-text-field
+            v-model="newAppointment.title"
+            label="Title"
+            variant="outlined"
+            density="comfortable"
+            class="mb-3"
+          />
+          <v-select
+            v-model="newAppointment.type"
+            :items="appointmentTypes"
+            label="Appointment Type"
+            variant="outlined"
+            density="comfortable"
+            class="mb-3"
+          />
+          <v-row class="mb-3">
+            <v-col cols="6">
+              <v-text-field
+                v-model="newAppointment.date"
+                label="Date"
+                type="date"
+                variant="outlined"
+                density="comfortable"
+              />
+            </v-col>
+            <v-col cols="3">
+              <v-text-field
+                v-model="newAppointment.startTime"
+                label="Start"
+                type="time"
+                variant="outlined"
+                density="comfortable"
+              />
+            </v-col>
+            <v-col cols="3">
+              <v-text-field
+                v-model="newAppointment.endTime"
+                label="End"
+                type="time"
+                variant="outlined"
+                density="comfortable"
+              />
+            </v-col>
+          </v-row>
+          <v-text-field
+            v-model="newAppointment.location"
+            label="Location"
+            variant="outlined"
+            density="comfortable"
+            class="mb-3"
+          />
+          <v-textarea
+            v-model="newAppointment.notes"
+            label="Notes"
+            variant="outlined"
+            density="comfortable"
+            rows="2"
+          />
+        </v-card-text>
+        <v-card-actions class="pa-4 pt-0">
+          <v-spacer />
+          <v-btn variant="text" @click="showAppointmentDialog = false">Cancel</v-btn>
+          <v-btn variant="flat" color="primary" @click="createAppointment">Create</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
 </template>
 
@@ -574,6 +651,55 @@ function activityLabel(type: string) {
     'message': 'Message',
   }
   return map[type] || type
+}
+
+// Appointment creation from patient details pane
+const showAppointmentDialog = ref(false)
+const appointmentTypes = ['follow-up', 'care-plan-review', 'discharge-planning', 'home-visit', 'administrative', 'internal']
+const newAppointment = ref({
+  title: '',
+  type: 'follow-up',
+  date: new Date().toISOString().split('T')[0],
+  startTime: '09:00',
+  endTime: '09:30',
+  location: '',
+  notes: ''
+})
+
+function openCreateAppointment() {
+  if (!selectedCase.value) return
+  const patient = selectedCase.value.patient
+  newAppointment.value = {
+    title: `Follow-up: ${patient.firstName} ${patient.lastName}`,
+    type: 'follow-up',
+    date: new Date().toISOString().split('T')[0],
+    startTime: '09:00',
+    endTime: '09:30',
+    location: '',
+    notes: ''
+  }
+  showAppointmentDialog.value = true
+}
+
+function createAppointment() {
+  if (!selectedCase.value) return
+  const patient = selectedCase.value.patient
+  const apt = {
+    id: `APT-${Date.now()}`,
+    title: newAppointment.value.title,
+    patientId: patient.id,
+    patientName: `${patient.firstName} ${patient.lastName}`,
+    caseId: selectedCase.value.case.id,
+    type: newAppointment.value.type,
+    date: newAppointment.value.date,
+    startTime: newAppointment.value.startTime,
+    endTime: newAppointment.value.endTime,
+    location: newAppointment.value.location,
+    notes: newAppointment.value.notes,
+    color: 'primary'
+  }
+  calendarData.appointments.push(apt)
+  showAppointmentDialog.value = false
 }
 </script>
 
