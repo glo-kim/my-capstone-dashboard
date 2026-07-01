@@ -6,7 +6,7 @@
     type="date"
     variant="outlined"
     density="comfortable"
-    prepend-inner-icon="mdi-calendar"
+    append-inner-icon="mdi-calendar"
     v-bind="$attrs"
   />
 </template>

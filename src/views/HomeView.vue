@@ -448,6 +448,7 @@
                 type="date"
                 variant="outlined"
                 density="comfortable"
+                append-inner-icon="mdi-calendar"
               />
             </v-col>
             <v-col cols="3">
@@ -457,6 +458,7 @@
                 type="time"
                 variant="outlined"
                 density="comfortable"
+                append-inner-icon="mdi-clock-outline"
               />
             </v-col>
             <v-col cols="3">
@@ -466,6 +468,7 @@
                 type="time"
                 variant="outlined"
                 density="comfortable"
+                append-inner-icon="mdi-clock-outline"
               />
             </v-col>
           </v-row>

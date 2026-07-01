@@ -127,3 +127,68 @@ body {
   font-weight: 500;
   letter-spacing: 0.01em;
 }
+
+/* MD3 Outlined Text Field Overrides */
+
+/* Hide native browser date/time picker icons */
+input[type="date"]::-webkit-calendar-picker-indicator,
+input[type="time"]::-webkit-calendar-picker-indicator {
+  display: none;
+  -webkit-appearance: none;
+}
+
+input[type="date"]::-webkit-inner-spin-button,
+input[type="time"]::-webkit-inner-spin-button {
+  display: none;
+}
+
+.v-text-field--variant-outlined .v-field,
+.v-select--variant-outlined .v-field,
+.v-textarea--variant-outlined .v-field {
+  border-radius: 4px !important;
+}
+
+.v-text-field--variant-outlined .v-field__outline,
+.v-select--variant-outlined .v-field__outline,
+.v-textarea--variant-outlined .v-field__outline {
+  --v-field-border-width: 1px;
+  --v-field-border-opacity: 1;
+  color: rgb(var(--v-theme-outline));
+}
+
+.v-text-field--variant-outlined .v-field__outline__start,
+.v-select--variant-outlined .v-field__outline__start,
+.v-textarea--variant-outlined .v-field__outline__start {
+  border-radius: 4px 0 0 4px !important;
+}
+
+.v-text-field--variant-outlined .v-field__outline__end,
+.v-select--variant-outlined .v-field__outline__end,
+.v-textarea--variant-outlined .v-field__outline__end {
+  border-radius: 0 4px 4px 0 !important;
+}
+
+.v-text-field--variant-outlined .v-field--focused .v-field__outline,
+.v-select--variant-outlined .v-field--focused .v-field__outline,
+.v-textarea--variant-outlined .v-field--focused .v-field__outline {
+  --v-field-border-width: 2px;
+  color: rgb(var(--v-theme-primary));
+}
+
+.v-text-field--variant-outlined .v-field:hover:not(.v-field--focused) .v-field__outline,
+.v-select--variant-outlined .v-field:hover:not(.v-field--focused) .v-field__outline,
+.v-textarea--variant-outlined .v-field:hover:not(.v-field--focused) .v-field__outline {
+  color: rgb(var(--v-theme-on-surface));
+}
+
+.v-text-field--variant-outlined .v-field .v-label,
+.v-select--variant-outlined .v-field .v-label,
+.v-textarea--variant-outlined .v-field .v-label {
+  color: rgb(var(--v-theme-on-surface-variant));
+}
+
+.v-text-field--variant-outlined .v-field--focused .v-label,
+.v-select--variant-outlined .v-field--focused .v-label,
+.v-textarea--variant-outlined .v-field--focused .v-label {
+  color: rgb(var(--v-theme-primary));
+}

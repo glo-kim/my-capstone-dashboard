@@ -87,7 +87,7 @@
         clearable
         style="max-width: 240px"
         variant="outlined"
-        rounded="pill"
+        rounded="xs"
         class="ml-2"
       />
     </div>

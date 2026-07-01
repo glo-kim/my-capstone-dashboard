@@ -112,7 +112,17 @@ export default createVuetify({
       elevation: 0,
     },
     VTextField: {
-      rounded: 'pill',
+      rounded: 'xs',
+      variant: 'outlined',
+      density: 'comfortable',
+    },
+    VSelect: {
+      rounded: 'xs',
+      variant: 'outlined',
+      density: 'comfortable',
+    },
+    VTextarea: {
+      rounded: 'xs',
       variant: 'outlined',
       density: 'comfortable',
     },

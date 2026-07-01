@@ -6,7 +6,7 @@
     type="time"
     variant="outlined"
     density="comfortable"
-    prepend-inner-icon="mdi-clock-outline"
+    append-inner-icon="mdi-clock-outline"
     v-bind="$attrs"
   />
 </template>

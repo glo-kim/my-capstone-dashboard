@@ -97,7 +97,7 @@
                 placeholder="Type a message..."
                 variant="outlined"
                 density="comfortable"
-                rounded="lg"
+                rounded="xs"
                 hide-details
                 append-inner-icon="mdi-send"
                 @click:append-inner="sendMessage"
