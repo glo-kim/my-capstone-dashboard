@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid class="pa-6">
+  <v-container fluid class="pa-6" :style="{ marginRight: showDrawer ? '400px' : '0', transition: 'margin-right 0.2s ease' }">
     <!-- Header -->
     <div class="d-flex align-center justify-space-between mb-6">
       <div>
@@ -172,26 +172,37 @@
           <v-row class="mb-3">
             <v-col cols="6">
               <v-text-field
-                v-model="newAppointment.date"
-                label="Date"
+                v-model="newAppointment.startDate"
+                label="Start Date"
                 type="date"
                 variant="outlined"
                 density="comfortable"
               />
             </v-col>
-            <v-col cols="3">
+            <v-col cols="6">
               <v-text-field
                 v-model="newAppointment.startTime"
-                label="Start"
+                label="Start Time"
                 type="time"
                 variant="outlined"
                 density="comfortable"
               />
             </v-col>
-            <v-col cols="3">
+          </v-row>
+          <v-row class="mb-3">
+            <v-col cols="6">
+              <v-text-field
+                v-model="newAppointment.endDate"
+                label="End Date"
+                type="date"
+                variant="outlined"
+                density="comfortable"
+              />
+            </v-col>
+            <v-col cols="6">
               <v-text-field
                 v-model="newAppointment.endTime"
-                label="End"
+                label="End Time"
                 type="time"
                 variant="outlined"
                 density="comfortable"
@@ -221,125 +232,211 @@
       </v-card>
     </v-dialog>
 
-    <!-- View Appointment Dialog -->
-    <v-dialog v-model="showViewDialog" max-width="500">
-      <v-card variant="flat" style="background: rgb(var(--v-theme-surface-light)); border: 1px solid rgba(var(--v-theme-outline-variant), 0.5)" v-if="selectedAppointment">
-        <v-card-title class="pa-4 border-b" style="white-space: normal; word-break: break-word;">
-          <div class="text-body-1 font-weight-bold">{{ selectedAppointment.title }}</div>
-        </v-card-title>
-        <v-card-text class="pa-4">
-          <div class="d-flex align-center mb-3">
-            <v-icon icon="mdi-clock-outline" size="18" class="mr-2 text-medium-emphasis" />
-            <span class="text-body-2">{{ selectedAppointment.date }} · {{ selectedAppointment.startTime }} - {{ selectedAppointment.endTime }}</span>
-          </div>
-          <div class="d-flex align-center mb-3">
-            <v-icon icon="mdi-map-marker-outline" size="18" class="mr-2 text-medium-emphasis" />
-            <span class="text-body-2">{{ selectedAppointment.location }}</span>
-          </div>
-          <div v-if="selectedAppointment.patientName" class="d-flex align-center mb-3">
-            <v-icon icon="mdi-account-outline" size="18" class="mr-2 text-medium-emphasis" />
-            <span class="text-body-2">{{ selectedAppointment.patientName }} ({{ selectedAppointment.caseId }})</span>
-          </div>
-          <div class="d-flex align-center mb-3">
-            <v-icon icon="mdi-tag-outline" size="18" class="mr-2 text-medium-emphasis" />
-            <v-chip size="x-small" :style="{ backgroundColor: getColor(selectedAppointment.type), color: 'white' }">{{ selectedAppointment.type }}</v-chip>
-          </div>
-          <div v-if="selectedAppointment.notes" class="mt-3">
-            <div class="text-caption text-medium-emphasis mb-1">Notes</div>
-            <div class="text-body-2">{{ selectedAppointment.notes }}</div>
-          </div>
-        </v-card-text>
-        <v-card-actions class="pa-4 pt-0">
-          <v-spacer />
-          <v-btn variant="text" @click="showViewDialog = false">Close</v-btn>
-          <v-btn variant="flat" color="primary" v-if="isEditable(selectedAppointment)" @click="openEditDialog">Edit</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-
-    <!-- Edit Appointment Dialog -->
-    <v-dialog v-model="showEditDialog" max-width="500">
-      <v-card variant="flat" style="background: rgb(var(--v-theme-surface-light)); border: 1px solid rgba(var(--v-theme-outline-variant), 0.5)">
-        <v-card-title class="pa-4 border-b font-weight-bold text-body-1">Edit Appointment</v-card-title>
-        <v-card-text class="pa-4">
-          <v-text-field
-            v-model="editAppointment.title"
-            label="Title"
-            variant="outlined"
-            density="comfortable"
-            class="mb-3"
-          />
-          <v-select
-            v-model="editAppointment.patientId"
-            :items="patientOptions"
-            item-title="name"
-            item-value="id"
-            label="Associate with Patient/Case"
-            variant="outlined"
-            density="comfortable"
-            clearable
-            class="mb-3"
-          />
-          <v-select
-            v-model="editAppointment.type"
-            :items="appointmentTypes"
-            label="Appointment Type"
-            variant="outlined"
-            density="comfortable"
-            class="mb-3"
-          />
-          <v-row class="mb-3">
-            <v-col cols="6">
-              <v-text-field
-                v-model="editAppointment.date"
-                label="Date"
-                type="date"
-                variant="outlined"
-                density="comfortable"
-              />
-            </v-col>
-            <v-col cols="3">
-              <v-text-field
-                v-model="editAppointment.startTime"
-                label="Start"
-                type="time"
-                variant="outlined"
-                density="comfortable"
-              />
-            </v-col>
-            <v-col cols="3">
-              <v-text-field
-                v-model="editAppointment.endTime"
-                label="End"
-                type="time"
-                variant="outlined"
-                density="comfortable"
-              />
-            </v-col>
-          </v-row>
-          <v-text-field
-            v-model="editAppointment.location"
-            label="Location"
-            variant="outlined"
-            density="comfortable"
-            class="mb-3"
-          />
-          <v-textarea
-            v-model="editAppointment.notes"
-            label="Notes"
-            variant="outlined"
-            density="comfortable"
-            rows="2"
-          />
-        </v-card-text>
-        <v-card-actions class="pa-4 pt-0">
-          <v-spacer />
-          <v-btn variant="text" @click="showEditDialog = false">Cancel</v-btn>
-          <v-btn variant="flat" color="primary" @click="saveEditedAppointment">Save</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
   </v-container>
+
+  <!-- Calendar Drawer -->
+  <v-navigation-drawer
+    v-model="showDrawer"
+    location="right"
+    temporary
+    :scrim="false"
+    width="400"
+    style="border-left: 1px solid rgba(var(--v-theme-outline-variant), 0.5);"
+  >
+    <!-- View Mode -->
+    <template v-if="drawerMode === 'view' && selectedAppointment">
+      <!-- Google Calendar-style action buttons -->
+      <div class="d-flex justify-end align-center pa-2" style="gap: 2px;">
+        <v-btn
+          icon="mdi-pencil-outline"
+          variant="text"
+          size="small"
+          v-if="isEditable(selectedAppointment)"
+          @click="switchToEdit"
+        >
+          <v-icon size="20">mdi-pencil-outline</v-icon>
+          <v-tooltip activator="parent" location="bottom">Edit Calendar</v-tooltip>
+        </v-btn>
+        <v-btn
+          icon="mdi-delete-outline"
+          variant="text"
+          size="small"
+          v-if="isEditable(selectedAppointment)"
+          @click="deleteAppointment(selectedAppointment!)"
+        >
+          <v-icon size="20">mdi-delete-outline</v-icon>
+          <v-tooltip activator="parent" location="bottom">Delete Calendar</v-tooltip>
+        </v-btn>
+        <v-menu>
+          <template #activator="{ props }">
+            <v-btn
+              icon="mdi-dots-vertical"
+              variant="text"
+              size="small"
+              v-bind="props"
+            >
+              <v-icon size="20">mdi-dots-vertical</v-icon>
+              <v-tooltip activator="parent" location="bottom">More Actions</v-tooltip>
+            </v-btn>
+          </template>
+          <v-list density="compact">
+            <v-list-item prepend-icon="mdi-content-duplicate" title="Duplicate" @click="duplicateAppointment(selectedAppointment!)" />
+            <v-list-item prepend-icon="mdi-printer-outline" title="Print" @click="printAppointment(selectedAppointment!)" />
+          </v-list>
+        </v-menu>
+        <v-btn
+          icon="mdi-close"
+          variant="text"
+          size="small"
+          @click="closeDrawer"
+        >
+          <v-icon size="20">mdi-close</v-icon>
+          <v-tooltip activator="parent" location="bottom">Close Calendar</v-tooltip>
+        </v-btn>
+      </div>
+
+      <div class="pa-4 pt-0">
+        <div class="text-h6 font-weight-bold">{{ selectedAppointment.title }}</div>
+      </div>
+      <v-divider />
+      <div class="pa-4">
+
+        <div v-if="selectedAppointment.patientName" class="d-flex align-center mb-3">
+          <v-icon icon="mdi-account-outline" size="18" class="mr-2 text-medium-emphasis" />
+          <span class="text-body-2">{{ selectedAppointment.patientName }} ({{ selectedAppointment.caseId }})</span>
+        </div>
+        <div class="d-flex align-center mb-3">
+          <v-icon icon="mdi-tag-outline" size="18" class="mr-2 text-medium-emphasis" />
+          <v-chip size="x-small" :style="{ backgroundColor: getColor(selectedAppointment.type), color: 'white' }">{{ selectedAppointment.type }}</v-chip>
+        </div>
+        <div class="d-flex align-center mb-3">
+          <v-icon icon="mdi-clock-outline" size="18" class="mr-2 text-medium-emphasis" />
+          <span class="text-body-2">{{ formatDateTimeRange(selectedAppointment.date, selectedAppointment.startTime, selectedAppointment.endTime) }}</span>
+        </div>
+        <div class="d-flex align-center mb-3">
+          <v-icon icon="mdi-map-marker-outline" size="18" class="mr-2 text-medium-emphasis" />
+          <span class="text-body-2">{{ selectedAppointment.location }}</span>
+        </div>
+        <div v-if="selectedAppointment.notes" class="mt-3">
+          <div class="text-caption text-medium-emphasis mb-1">Notes</div>
+          <div class="text-body-2">{{ selectedAppointment.notes }}</div>
+        </div>
+      </div>
+    </template>
+
+    <!-- Edit Mode -->
+    <template v-if="drawerMode === 'edit'">
+      <div class="d-flex align-center pa-2" style="gap: 2px;">
+        <v-btn
+          icon="mdi-arrow-left"
+          variant="text"
+          size="small"
+          @click="switchToView"
+        >
+          <v-icon size="20">mdi-arrow-left</v-icon>
+          <v-tooltip activator="parent" location="bottom">Back</v-tooltip>
+        </v-btn>
+        <v-spacer />
+        <v-btn variant="flat" color="primary" size="small" @click="saveEditedAppointment">Save</v-btn>
+        <v-btn
+          icon="mdi-close"
+          variant="text"
+          size="small"
+          @click="closeDrawer"
+        >
+          <v-icon size="20">mdi-close</v-icon>
+          <v-tooltip activator="parent" location="bottom">Close Calendar</v-tooltip>
+        </v-btn>
+      </div>
+
+      <div class="pa-4 pt-0">
+        <div class="text-h6 font-weight-bold">Edit Calendar</div>
+      </div>
+      <v-divider />
+      <div class="pa-4" style="overflow-y: auto; height: calc(100% - 130px);">
+        <v-text-field
+          v-model="editAppointment.title"
+          label="Title"
+          variant="outlined"
+          density="comfortable"
+          class="mb-3"
+        />
+        <v-select
+          v-model="editAppointment.patientId"
+          :items="patientOptions"
+          item-title="name"
+          item-value="id"
+          label="Associate with Patient/Case"
+          variant="outlined"
+          density="comfortable"
+          clearable
+          class="mb-3"
+        />
+        <v-select
+          v-model="editAppointment.type"
+          :items="appointmentTypes"
+          label="Appointment Type"
+          variant="outlined"
+          density="comfortable"
+          class="mb-3"
+        />
+        <v-row class="mb-3">
+          <v-col cols="6">
+            <v-text-field
+              v-model="editAppointment.startDate"
+              label="Start Date"
+              type="date"
+              variant="outlined"
+              density="comfortable"
+            />
+          </v-col>
+          <v-col cols="6">
+            <v-text-field
+              v-model="editAppointment.startTime"
+              label="Start Time"
+              type="time"
+              variant="outlined"
+              density="comfortable"
+            />
+          </v-col>
+        </v-row>
+        <v-row class="mb-3">
+          <v-col cols="6">
+            <v-text-field
+              v-model="editAppointment.endDate"
+              label="End Date"
+              type="date"
+              variant="outlined"
+              density="comfortable"
+            />
+          </v-col>
+          <v-col cols="6">
+            <v-text-field
+              v-model="editAppointment.endTime"
+              label="End Time"
+              type="time"
+              variant="outlined"
+              density="comfortable"
+            />
+          </v-col>
+        </v-row>
+        <v-text-field
+          v-model="editAppointment.location"
+          label="Location"
+          variant="outlined"
+          density="comfortable"
+          class="mb-3"
+        />
+        <v-textarea
+          v-model="editAppointment.notes"
+          label="Notes"
+          variant="outlined"
+          density="comfortable"
+          rows="2"
+        />
+      </div>
+    </template>
+  </v-navigation-drawer>
 </template>
 
 <script setup lang="ts">
@@ -365,8 +462,8 @@ interface Appointment {
 const currentView = ref(calendarData.preferences.defaultView)
 const currentDate = ref(new Date().toISOString().split('T')[0])
 const showNewDialog = ref(false)
-const showViewDialog = ref(false)
-const showEditDialog = ref(false)
+const showDrawer = ref(false)
+const drawerMode = ref<'view' | 'edit'>('view')
 const selectedAppointment = ref<Appointment | null>(null)
 const appointments = ref<Appointment[]>(calendarData.appointments)
 
@@ -374,8 +471,9 @@ const editAppointment = ref({
   title: '',
   patientId: null as string | null,
   type: 'follow-up',
-  date: '',
+  startDate: '',
   startTime: '',
+  endDate: '',
   endTime: '',
   location: '',
   notes: ''
@@ -401,8 +499,9 @@ const newAppointment = ref({
   title: '',
   patientId: null as string | null,
   type: 'follow-up',
-  date: currentDate.value,
+  startDate: currentDate.value,
   startTime: '09:00',
+  endDate: currentDate.value,
   endTime: '09:30',
   location: '',
   notes: ''
@@ -547,7 +646,7 @@ function createAppointment() {
     patientName: patient?.name || null,
     caseId: newAppointment.value.patientId ? `CASE-${newAppointment.value.patientId.replace('PT-', '')}` : null,
     type: newAppointment.value.type,
-    date: newAppointment.value.date,
+    date: newAppointment.value.startDate,
     startTime: newAppointment.value.startTime,
     endTime: newAppointment.value.endTime,
     location: newAppointment.value.location,
@@ -560,7 +659,13 @@ function createAppointment() {
 
 function viewAppointment(apt: Appointment) {
   selectedAppointment.value = apt
-  showViewDialog.value = true
+  drawerMode.value = 'view'
+  showDrawer.value = true
+}
+
+function closeDrawer() {
+  showDrawer.value = false
+  drawerMode.value = 'view'
 }
 
 function isEditable(apt: Appointment): boolean {
@@ -568,21 +673,100 @@ function isEditable(apt: Appointment): boolean {
   return apt.date >= today
 }
 
-function openEditDialog() {
+function switchToEdit() {
   if (!selectedAppointment.value) return
   const apt = selectedAppointment.value
   editAppointment.value = {
     title: apt.title,
     patientId: apt.patientId,
     type: apt.type,
-    date: apt.date,
+    startDate: apt.date,
     startTime: apt.startTime,
+    endDate: apt.date,
     endTime: apt.endTime,
     location: apt.location,
     notes: apt.notes
   }
-  showViewDialog.value = false
-  showEditDialog.value = true
+  drawerMode.value = 'edit'
+}
+
+function switchToView() {
+  drawerMode.value = 'view'
+}
+
+function deleteAppointment(apt: Appointment) {
+  const idx = appointments.value.findIndex(a => a.id === apt.id)
+  if (idx !== -1) {
+    appointments.value.splice(idx, 1)
+  }
+  closeDrawer()
+}
+
+function duplicateAppointment(apt: Appointment) {
+  const duplicate: Appointment = {
+    ...apt,
+    id: `APT-DUP-${Date.now()}`,
+    title: `${apt.title} (Copy)`
+  }
+  appointments.value.push(duplicate)
+  closeDrawer()
+}
+
+function printAppointment(apt: Appointment) {
+  const printContent = `
+    <h2>${apt.title}</h2>
+    <p><strong>Date:</strong> ${apt.date}</p>
+    <p><strong>Time:</strong> ${apt.startTime} - ${apt.endTime}</p>
+    <p><strong>Location:</strong> ${apt.location}</p>
+    ${apt.patientName ? `<p><strong>Patient:</strong> ${apt.patientName} (${apt.caseId})</p>` : ''}
+    ${apt.notes ? `<p><strong>Notes:</strong> ${apt.notes}</p>` : ''}
+  `
+  const printWindow = window.open('', '_blank')
+  if (printWindow) {
+    printWindow.document.write(`<html><body>${printContent}</body></html>`)
+    printWindow.document.close()
+    printWindow.print()
+  }
+  closeDrawer()
+}
+
+function formatDisplayDate(dateStr: string): string {
+  const date = new Date(dateStr + 'T12:00:00')
+  const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+  const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+  return `${days[date.getDay()]}, ${months[date.getMonth()]} ${date.getDate()}`
+}
+
+function formatTime12(time24: string): string {
+  const [h, m] = time24.split(':').map(Number)
+  const period = h >= 12 ? 'PM' : 'AM'
+  const hour = h % 12 || 12
+  return `${hour}:${m.toString().padStart(2, '0')} ${period}`
+}
+
+function formatTimeNoPeriod(time24: string): string {
+  const [h, m] = time24.split(':').map(Number)
+  const hour = h % 12 || 12
+  return `${hour}:${m.toString().padStart(2, '0')}`
+}
+
+function formatDateTimeRange(dateStr: string, startTime: string, endTime: string): string {
+  const today = new Date().toISOString().split('T')[0]
+  const date = new Date(dateStr + 'T12:00:00')
+  const days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+
+  const dateLabel = dateStr === today
+    ? 'Today'
+    : `${days[date.getDay()]}, ${months[date.getMonth()]} ${date.getDate()}`
+
+  const startPeriod = parseInt(startTime.split(':')[0]) >= 12 ? 'PM' : 'AM'
+  const endPeriod = parseInt(endTime.split(':')[0]) >= 12 ? 'PM' : 'AM'
+
+  if (startPeriod === endPeriod) {
+    return `${dateLabel} ${formatTimeNoPeriod(startTime)}-${formatTime12(endTime)}`
+  }
+  return `${dateLabel} ${formatTime12(startTime)}-${formatTime12(endTime)}`
 }
 
 function saveEditedAppointment() {
@@ -598,13 +782,13 @@ function saveEditedAppointment() {
     patientName: patient?.name || null,
     caseId: editAppointment.value.patientId ? `CASE-${editAppointment.value.patientId.replace('PT-', '')}` : null,
     type: editAppointment.value.type,
-    date: editAppointment.value.date,
+    date: editAppointment.value.startDate,
     startTime: editAppointment.value.startTime,
     endTime: editAppointment.value.endTime,
     location: editAppointment.value.location,
     notes: editAppointment.value.notes
   }
-  showEditDialog.value = false
+  drawerMode.value = 'view'
 }
 </script>
 
